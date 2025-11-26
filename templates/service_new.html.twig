@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un service - ServicePro{% endblock %}
+{% block stylesheets %}
+   
+   
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+{% endblock %}
+{% block body %}
+    {% include 'partials/header.html.twig' %}
+
+    <div class="page-container">
+        <div class="container">
+            <h1>Ajouter un service</h1>
+
+            {% for message in app.flashes('success') %}
+                <div class="flash-success">{{ message }}</div>
+            {% endfor %}
+
+            <form method="post" action="{{ path('services_new') }}" class="service-form" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:800px;">
+                <div style="grid-column: span 2;">
+                    <label for="nomService">Nom du service</label>
+                    <input id="nomService" name="nomService" type="text" required style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
+                </div>
+                <div>
+                    <label for="categorie">Catégorie</label>
+                    <input id="categorie" name="categorie" type="text" placeholder="Plomberie, Peinture..." style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
+                </div>
+                <div>
+                    <label for="prix">Prix (TND)</label>
+                    <input id="prix" name="prix" type="number" step="0.01" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
+                </div>
+                <div>
+                    <label for="duree">Durée (minutes)</label>
+                    <input id="duree" name="duree" type="number" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
+                </div>
+                <div style="grid-column: span 2;">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="4" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;"></textarea>
+                </div>
+                <div style="grid-column: span 2;display:flex;gap:12px;">
+                    <a href="{{ path('services') }}" class="btn btn-outline">Annuler</a>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include 'partials/footer.html.twig' %}
+{% endblock %}
+
+

@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil - ServicePro{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/register.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/profile.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block body %}
+{% include 'partials/header.html.twig' %}
+<div class="profile-container">
+<div class="page-wrapper">
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="left">
+        <div class="avatar">{{ (user.nom ?: app.user.username)|first|upper }}</div>
+        <div class="user-meta">
+          <h2 class="user-name">{{ user.nom ?: app.user.username }}</h2>
+          <span class="role-badge">{{ (user.role ?: (app.user.role ?? 'client'))|capitalize }}</span>
+          <div class="rating"><i class="bi bi-star-fill"></i> <strong>{{ user.rating ?: '0.0' }}</strong> / 5.0</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="edit-btn" class="btn btn-primary">Modifier</button>
+        <button type="button" id="cancel-btn" class="btn btn-secondary" style="display: none;">Annuler</button>
+        <a href="{{ path('app_logout') }}" class="btn btn-logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
+      </div>
+    </div>
+
+    <!-- Messages flash -->
+    {% for message in app.flashes('success') %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+
+    <form method="post" action="{{ path('app_profile') }}" id="profile-form">
+      <section class="profile-section">
+        <h3>Informations personnelles</h3>
+        <div class="field">
+          <label>Nom</label>
+          <div class="value view-mode">{{ user.nom ?: '-' }}</div>
+          <input type="text" name="nom" class="edit-mode input-field" value="{{ user.nom ?: '' }}" />
+        </div>
+        <div class="field">
+          <label>Prénom</label>
+          <div class="value view-mode">{{ user.prenom ?: '-' }}</div>
+          <input type="text" name="prenom" class="edit-mode input-field" value="{{ user.prenom ?: '' }}" />
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <div class="value">{{ user.email ?: '-' }}</div>
+          <small class="hint">L'email ne peut pas être modifié</small>
+        </div>
+        <div class="field">
+          <label>Téléphone</label>
+          <div class="value view-mode">{{ user.tel ?: 'Non renseigné' }}</div>
+          <input type="tel" name="tel" class="edit-mode input-field" value="{{ user.tel ?: '' }}" placeholder="+216 XX XXX XXX" />
+        </div>
+        <div class="field">
+          <label>Adresse</label>
+          <div class="value view-mode">{{ user.adresse ?: 'Non renseignée' }}</div>
+          <input type="text" name="adresse" class="edit-mode input-field" value="{{ user.adresse ?: '' }}" placeholder="Votre adresse complète" />
+        </div>
+      </section>
+
+      <section class="profile-section">
+        <h3>Biographie</h3>
+        <div class="bio view-mode">{{ user.bio ?: 'Parlez de votre expérience et vos compétences...' }}</div>
+        <textarea name="bio" class="edit-mode input-field" rows="4" placeholder="Parlez de votre expérience et vos compétences...">{{ user.bio ?: '' }}</textarea>
+      </section>
+
+      <section class="profile-section">
+        <h3>Compétences</h3>
+        <div class="skills view-mode">{{ user.competences ?: 'Aucune compétence renseignée' }}</div>
+        <input type="text" name="competences" class="edit-mode input-field" value="{{ user.competences ?: '' }}" placeholder="Plomberie, Chauffage, Sanitaire" />
+        <small class="hint">Séparez les compétences par des virgules</small>
+      </section>
+
+      <div class="form-actions edit-mode">
+        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+        <button type="button" id="cancel-form-btn" class="btn btn-secondary">Annuler</button>
+      </div>
+    </form>
+
+    <section class="stats">
+      <div class="stat-card">
+        <div class="stat-value">{{ user.totalGains is defined and user.totalGains is not null ? (user.totalGains ~ ' TND') : '0 TND' }}</div>
+        <div class="stat-label">Gains totaux</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ user.completed ?: '0' }}</div>
+        <div class="stat-label">Prestations complétées</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ user.reviewsCount ?: '0' }}</div>
+        <div class="stat-label">Avis reçus</div>
+      </div>
+    </section>
+  </div>
+</div>
+</div>
+{% include 'partials/footer.html.twig' %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editBtn = document.getElementById('edit-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const cancelFormBtn = document.getElementById('cancel-form-btn');
+    const profileForm = document.getElementById('profile-form');
+    const profileCard = document.querySelector('.profile-card');
+    const formActions = document.querySelector('.form-actions');
+
+    
+    editBtn.addEventListener('click', function() {
+        profileCard.classList.add('editing');
+        editBtn.style.display = 'none';
+        cancelBtn.style.display = 'inline-flex';
+        
+        
+        profileForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Annuler l'édition
+    function cancelEdit() {
+        profileCard.classList.remove('editing');
+        editBtn.style.display = 'inline-flex';
+        cancelBtn.style.display = 'none';
+    }
+
+    cancelBtn.addEventListener('click', cancelEdit);
+    cancelFormBtn.addEventListener('click', cancelEdit);
+});
+</script>
+{% endblock %}

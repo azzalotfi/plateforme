@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block stylesheets %}
+        
+        <link rel="stylesheet" href="{{ asset('css/styl.css') }}">
+    {% endblock %}
+</head>
+
+<body>
+{% include 'partials/header.html.twig' %}
+
+
+{% if app.user %}
+
+<div class="container">
+
+<div class="card-container">
+
+    <div class="front">
+        <div class="image">
+            <img src="{{ asset('images/chip.png') }}" alt="">
+            <img src="{{ asset('images/visa.png') }}" alt="">
+        </div>
+        <div class="card-number-box">#### #### #### ####</div>
+        
+        <div class="flexbox">
+            <div class="box">
+                <span>card holder</span>
+                <div class="card-holder-name">full name</div>
+            </div>
+            <div class="box">
+                <span>expires</span>
+                <div class="expiration">
+                    <span class="exp-month">mm</span>
+                    <span class="exp-year">yy</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="back">
+        <div class="stripe"></div>
+        <div class="box">
+            <span>cvv</span>
+            <div class="cvv-box"></div>
+            <img src="{{ asset('images/visa.png') }}" alt="">
+        </div>
+    </div>
+
+</div>
+
+<form action="{{ path('paiement_submit') }}" method="POST">
+    <div class="inputBox">
+        <span>Card Number</span>  
+        <input type="text" 
+               class="card-number-input"
+               maxlength="19"
+               required 
+               oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(.{4})/g, '$1 ').trim();">
+    </div>
+
+    <div class="inputBox">
+        <span>Card Holder</span>
+        <input type="text" class="card-holder-input" name="card_holder" required>
+    </div>
+
+    <div class="flexbox">
+        <div class="inputBox">
+            <span>Expiration MM</span>
+            <select name="expiration_month" class="month-input" required>
+                <option value="" disabled selected>Month</option>
+                {% for m in 1..12 %}
+                    <option value="{{ '%02d'|format(m) }}">{{ '%02d'|format(m) }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="inputBox">
+            <span>Expiration YY</span>
+            <select name="expiration_year" class="year-input" required>
+                <option value="" disabled selected>Year</option>
+                {% for y in 2024..2035 %}
+                    <option value="{{ y }}">{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="inputBox">
+            <span>CVV</span>
+            <input type="text" 
+                   maxlength="3" 
+                   class="cvv-input" 
+                   required 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+        </div>
+    </div>
+
+    <input type="submit" value="Submit" class="submit-btn">
+</form>
+
+</div>
+
+{% else %}
+
+<div class="not-logged" style="text-align:center; margin-top:50px;">
+    <h2>Vous devez être connecté pour accéder au paiement.</h2>
+    <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+</div>
+
+{% endif %}
+{% include 'partials/footer.html.twig' %}
+<script>
+// ========== CARD NUMBER ==========
+document.querySelector('.card-number-input')?.addEventListener('input', function() {
+    let val = this.value.replace(/[^0-9]/g, '');  
+    this.value = val.replace(/(.{4})/g, '$1 ').trim();
+    document.querySelector('.card-number-box').innerText = this.value || '#### #### #### ####';
+});
+
+// ========== CARD HOLDER ==========
+document.querySelector('.card-holder-input')?.addEventListener('input', function() {
+    document.querySelector('.card-holder-name').innerText = this.value || 'full name';
+});
+
+// ========== MONTH ==========
+document.querySelector('.month-input')?.addEventListener('input', function() {
+    document.querySelector('.exp-month').innerText = this.value;
+});
+
+// ========== YEAR ==========
+document.querySelector('.year-input')?.addEventListener('input', function() {
+    document.querySelector('.exp-year').innerText = this.value;
+});
+
+// ========== CVV ANIMATION ==========
+document.querySelector('.cvv-input')?.addEventListener('mouseenter', function() {
+    document.querySelector('.front').style.transform = 'perspective(1000px) rotateY(-180deg)';
+    document.querySelector('.back').style.transform = 'perspective(1000px) rotateY(0deg)';
+});
+
+document.querySelector('.cvv-input')?.addEventListener('mouseleave', function() {
+    document.querySelector('.front').style.transform = 'perspective(1000px) rotateY(0deg)';
+    document.querySelector('.back').style.transform = 'perspective(1000px) rotateY(180deg)';
+});
+
+document.querySelector('.cvv-input')?.addEventListener('input', function() {
+    document.querySelector('.cvv-box').innerText = this.value;
+});
+</script>
+
+</body>
+</html>

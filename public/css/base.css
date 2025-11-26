@@ -1,0 +1,37 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #faf5ff 0%, #fef3f8 40%, #f0f9ff 100%);
+  color: #333;
+}
+
+a {
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+.btn-gradient {
+  background: linear-gradient(to right, #7c3aed, #ec4899);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
+}
+
+.input-field {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.4);
+}

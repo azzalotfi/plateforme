@@ -1,0 +1,192 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Services - ServicePro{% endblock %}
+{% block stylesheets %}
+   
+   
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+{% endblock %}
+{% block body %}
+    {% include 'partials/header.html.twig' %}
+    
+    <div class="services-page">
+        <div class="container">
+            <!-- Header Section -->
+            <div class="services-header-section">
+                <div class="services-badge">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <span>Catalogue de services</span>
+                </div>
+                <h1 class="services-main-title">Nos Services</h1>
+                <p class="services-subtitle">Découvrez nos professionnels qualifiés pour tous vos besoins</p>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input id="serviceSearch" type="text" placeholder="Rechercher un service..." class="search-input" autocomplete="off">
+                </div>
+                <div class="filter-dropdown">
+                    <select id="categorySelect" class="category-select">
+                        {% for category in categories %}
+                            <option value="{{ category|lower }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {# bouton d'ajout supprimé à la demande #}
+            </div>
+
+            <!-- Services Results -->
+            <div class="services-results-header">
+                <span class="results-count">{{ total_services }} services trouvés</span>
+                <span class="sort-option">
+                    Tri:
+                    <a href="{{ path('services', { sort: 'name' }) }}">Nom ↑</a> |
+                    <a href="{{ path('services', { sort: 'name_desc' }) }}">Nom ↓</a> |
+                    <a href="{{ path('services', { sort: 'price' }) }}">Prix ↑</a> |
+                    <a href="{{ path('services', { sort: 'price_desc' }) }}">Prix ↓</a> |
+                    <a href="{{ path('services', { sort: 'new' }) }}">Nouveaux</a>
+                </span>
+            </div>
+
+            <!-- Services Grid -->
+            <div id="servicesGrid" class="services-grid">
+                {% for service in services %}
+                    <div class="service-card-full"
+                         data-name="{{ service.nomService|lower }}"
+                         data-category="{{ (service.categorie ?? 'tous')|lower }}"
+                         data-price="{{ service.prix is not null ? service.prix : 0 }}">
+                        <div class="service-card-image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80" alt="{{ service.nomService }}" class="service-card-image">
+                            <span class="service-category-tag">{{ service.categorie ?? 'Service' }}</span>
+                        </div>
+                        <div class="service-card-content">
+                            <h3 class="service-card-title">{{ service.nomService }}</h3>
+                            <p class="service-card-description">{{ service.description }}</p>
+                            <div class="service-card-rating">
+                                <svg class="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <span class="rating-value">5.0</span>
+                                <span class="provider-name">ServicePro</span>
+                            </div>
+                            <div class="service-card-footer">
+                                <span class="service-price">
+                                    {% if service.prix is not null %}
+                                        À partir de {{ service.prix }} TND
+                                    {% else %}
+                                        Prix sur demande
+                                    {% endif %}
+                                </span>
+                                <button class="reserve-btn">Réserver</button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    {% include 'partials/footer.html.twig' %}
+    
+    <script>
+    (function () {
+        const grid = document.getElementById('servicesGrid');
+        if (!grid) return;
+        const cards = Array.from(grid.querySelectorAll('.service-card-full'));
+        const search = document.getElementById('serviceSearch');
+        const select = document.getElementById('categorySelect');
+        const resultsCount = document.querySelector('.results-count');
+
+        function normalize(s) {
+            return (s || '').toString().toLowerCase().trim();
+        }
+
+        function applyFilter() {
+            const q = normalize(search ? search.value : '');
+            const cat = normalize(select ? select.value : 'tous');
+            let visible = 0;
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                const category = card.getAttribute('data-category') || 'tous';
+                const matchText = !q || name.includes(q);
+                const matchCat = cat === 'tous' || category === cat;
+                const show = matchText && matchCat;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            if (resultsCount) {
+                resultsCount.textContent = visible + ' services trouvés';
+            }
+        }
+
+        if (search) search.addEventListener('input', applyFilter);
+        if (select) select.addEventListener('change', applyFilter);
+        applyFilter();
+    })();
+    </script>
+
+    <script>
+    // I18N minimal FR/EN pour cette page
+    (function () {
+        const t = {
+            fr: {
+                services_title: 'Nos Services',
+                services_subtitle: 'Découvrez nos professionnels qualifiés pour tous vos besoins',
+                search_placeholder: 'Rechercher un service...',
+                found_suffix: ' services trouvés'
+            },
+            en: {
+                services_title: 'Our Services',
+                services_subtitle: 'Discover our qualified professionals for all your needs',
+                search_placeholder: 'Search a service...',
+                found_suffix: ' services found'
+            }
+        };
+
+        const title = document.querySelector('.services-main-title');
+        const subtitle = document.querySelector('.services-subtitle');
+        const search = document.getElementById('serviceSearch');
+        const resultsCount = document.querySelector('.results-count');
+
+        function applyLang(lang) {
+            const dict = t[lang] || t.fr;
+            if (title) title.textContent = dict.services_title;
+            if (subtitle) subtitle.textContent = dict.services_subtitle;
+            if (search) search.placeholder = dict.search_placeholder;
+            // met à jour le suffixe du compteur sans casser le nombre
+            if (resultsCount) {
+                const nb = (resultsCount.textContent.match(/^\d+/) || ['0'])[0];
+                resultsCount.textContent = nb + dict.found_suffix;
+            }
+            document.documentElement.setAttribute('lang', lang);
+            localStorage.setItem('lang', lang);
+        }
+
+        // Écouter les changements du sélecteur de langue
+        const langSelect = document.getElementById('langSelect');
+        if (langSelect) {
+            langSelect.addEventListener('change', function () {
+                applyLang(this.value);
+            });
+        }
+
+        // Écouter l'événement personnalisé de changement de langue
+        document.addEventListener('langchange', function (e) {
+            applyLang(e.detail.lang);
+        });
+
+        // appliquer la langue au chargement
+        applyLang(localStorage.getItem('lang') || 'fr');
+    })();
+    </script>
+{% endblock %}
