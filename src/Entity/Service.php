@@ -29,6 +29,9 @@ class Service
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private ?string $categorie = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $image = null;
+
     #[ORM\Column(type: 'boolean', options: ['default' => true])]
     private bool $disponible = true;
 
@@ -105,6 +108,17 @@ class Service
     public function setCategorie(?string $categorie): self
     {
         $this->categorie = $categorie;
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
         return $this;
     }
 

@@ -13,7 +13,18 @@ class SecurityController extends AbstractController
     {
         if ($this->getUser()) {
             $user = $this->getUser();
-            if ($user instanceof \App\Entity\User && $user->getRole() === 'client') {
+            if (!$user instanceof \App\Entity\User) {
+                return $this->redirectToRoute('app_logout');
+            }
+
+            $roles = $user->getRoles();
+            $role = $user->getRole();
+
+            if (in_array('ROLE_ADMIN', $roles) || $role === 'admin') {
+                return $this->redirectToRoute('app_admin_dashboard');
+            } elseif (in_array('ROLE_PRESTATAIRE', $roles) || $role === 'prestataire') {
+                return $this->redirectToRoute('app_provider_dashboard');
+            } elseif (in_array('ROLE_CLIENT', $roles) || $role === 'client') {
                 return $this->redirectToRoute('app_dashboard');
             }
             return $this->redirectToRoute('app_profile');

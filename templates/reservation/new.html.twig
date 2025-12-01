@@ -1,0 +1,153 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réserver - {{ service.nomService }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/reservation.css') }}">
+{% endblock %}
+
+{% block body %}
+{% include 'partials/header.html.twig' %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden reservation-card animate-fade-in">
+                <div class="position-relative reservation-image-container">
+                    {% if service.image %}
+                        <img src="{{ asset(service.image) }}" class="w-100 h-100 reservation-image" alt="{{ service.nomService }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1581578731117-104f2a863a30?w=800&q=80" class="w-100 h-100 reservation-image" alt="{{ service.nomService }}">
+                    {% endif %}
+                    <div class="reservation-overlay">
+                        <h3 class="service-title">{{ service.nomService }}</h3>
+                        <p class="mb-0 text-white-50"><i class="bi bi-tag-fill me-2"></i>{{ service.categorie }}</p>
+                    </div>
+                </div>
+                <div class="card-header bg-white text-center border-0 pt-4">
+                    <p class="text-muted mb-0">Remplissez le formulaire ci-dessous pour réserver</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4 info-box">
+                        <div class="text-center w-50 border-end">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Prix estimé</small>
+                            <span class="fs-5 price-tag">{{ service.prix ? service.prix ~ ' TND' : 'Sur devis' }}</span>
+                        </div>
+                        <div class="text-center w-50">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Durée</small>
+                            <span class="fs-5 duration-tag">{{ service.duree ? service.duree ~ ' min' : 'Non spécifiée' }}</span>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        <div class="mb-4">
+                            <label for="date" class="form-label fw-semibold text-secondary fs-5">Date souhaitée</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                <input type="date" id="date" name="date" class="form-control border-start-0 ps-0" required min="{{ 'now'|date('Y-m-d') }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="heure" class="form-label fw-semibold text-secondary fs-5">Heure souhaitée</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                <input type="time" id="heure" name="heure" class="form-control border-start-0 ps-0" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="lieu" class="form-label fw-semibold text-secondary fs-5">Lieu de la prestation</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                <input type="text" id="lieu" name="lieu" class="form-control border-start-0 ps-0" placeholder="Adresse complète (ex: 123 Rue de la République, Tunis)" required>
+                            </div>
+                        </div>
+
+<div class="d-flex gap-3 mt-5">
+    <button type="submit" class="btn btn-primary text-white btn-submit flex-fill">
+        <i class="bi bi-send me-2"></i> Envoyer la demande
+    </button>
+    <a href="{{ path('services') }}" class="btn btn-light btn-lg rounded-3 fw-semibold text-secondary flex-fill text-center">
+        Annuler
+    </a>
+</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'partials/footer.html.twig' %}
+
+<script>
+// Validation des horaires de réservation (8h - 20h)
+document.addEventListener('DOMContentLoaded', function() {
+    const heureInput = document.getElementById('heure');
+    const form = document.querySelector('form');
+    
+    if (heureInput && form) {
+        // Set initial constraints
+        heureInput.setAttribute('min', '08:00');
+        heureInput.setAttribute('max', '20:00');
+        
+        // Add custom validation on form submit
+        form.addEventListener('submit', function(e) {
+            const heureValue = heureInput.value;
+            
+            if (!heureValue) {
+                return; // Let required validation handle this
+            }
+            
+            const [hours, minutes] = heureValue.split(':').map(Number);
+            const timeInMinutes = hours * 60 + minutes;
+            const minTime = 8 * 60; // 8:00
+            const maxTime = 20 * 60; // 20:00
+            
+            if (timeInMinutes < minTime || timeInMinutes > maxTime) {
+                e.preventDefault();
+                
+                // Show error message
+                const existingError = document.getElementById('time-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.id = 'time-error';
+                errorDiv.className = 'alert alert-danger mt-2';
+                errorDiv.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i><strong>Horaire non valide :</strong> Les réservations ne sont acceptées qu\'entre 8h00 et 20h00.';
+                errorDiv.style.cssText = 'background-color: #fee; border: 1px solid #fcc; color: #c33; padding: 12px; border-radius: 8px; margin-top: 8px;';
+                
+                heureInput.parentElement.parentElement.appendChild(errorDiv);
+                heureInput.focus();
+                
+                // Scroll to error
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                return false;
+            }
+        });
+        
+        // Add visual feedback on input change
+        heureInput.addEventListener('blur', function() {
+            const heureValue = this.value;
+            if (!heureValue) return;
+            
+            const [hours, minutes] = heureValue.split(':').map(Number);
+            const timeInMinutes = hours * 60 + minutes;
+            
+            if (timeInMinutes < 8 * 60 || timeInMinutes > 20 * 60) {
+                this.style.borderColor = '#dc3545';
+            } else {
+                this.style.borderColor = '';
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}

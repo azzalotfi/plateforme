@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ service.nomService }} - ServicePro{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/service-details.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block body %}
+{% include 'partials/header.html.twig' %}
+
+<div class="service-container">
+    {# Hero Image #}
+    <div class="service-hero">
+        {% if service.image %}
+            <img src="{{ asset(service.image) }}" alt="{{ service.nomService }}">
+        {% else %}
+            <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&q=80" alt="{{ service.nomService }}">
+        {% endif %}
+    </div>
+
+    <div class="service-grid">
+        {# Main Content #}
+        <div class="service-main">
+            <div class="service-header">
+                <span class="service-badge">{{ service.categorie ?? 'Service' }}</span>
+                <h1 class="service-title">{{ service.nomService }}</h1>
+                
+                <div class="service-meta">
+                    {% if service.duree %}
+                        <span><i class="bi bi-clock"></i> {{ service.duree }} min</span>
+                    {% endif %}
+                    <span><i class="bi bi-geo-alt"></i> {{ service.prestataire.user.adresse ?? 'À domicile' }}</span>
+                    {% if service.disponible %}
+                        <span class="text-success"><i class="bi bi-check-circle-fill"></i> Disponible</span>
+                    {% else %}
+                        <span class="text-muted"><i class="bi bi-x-circle-fill"></i> Indisponible</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="service-description">
+                <h3>À propos de ce service</h3>
+                <p>{{ service.description }}</p>
+            </div>
+
+            {# Reviews Section #}
+            <div class="reviews-section">
+                <div class="reviews-header">
+                    <h3>Avis Clients</h3>
+                    {% set totalRating = 0 %}
+                    {% set reviewCount = service.reviews|length %}
+                    {% for review in service.reviews %}
+                        {% set totalRating = totalRating + review.note %}
+                    {% endfor %}
+                    
+                    {% if reviewCount > 0 %}
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-4 fw-bold">{{ (totalRating / reviewCount)|number_format(1) }}</span>
+                            <div class="star-rating">
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <span class="text-muted">({{ reviewCount }} avis)</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if reviewCount > 0 %}
+                    {% for review in service.reviews %}
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-name">{{ review.client.user.nom }} {{ review.client.user.prenom }}</div>
+                                <div class="review-date">{{ review.dateAvis|date('d/m/Y') }}</div>
+                            </div>
+                            <div class="star-rating mb-2">
+                                {% for i in 1..5 %}
+                                    {% if i <= review.note %}
+                                        <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="mb-0 text-muted">{{ review.commentaire }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-light text-center py-4">
+                        <i class="bi bi-chat-square-text fs-3 text-muted mb-2 d-block"></i>
+                        Aucun avis pour le moment.
+                    </div>
+                {% endif %}
+
+                {# Add Review Form #}
+                {% if is_granted('ROLE_CLIENT') %}
+                    {% if canReview %}
+                        <div class="review-form">
+                            <h4 class="mb-4">Laisser un avis</h4>
+                            <form method="post">
+                                <div class="mb-4">
+                                    <label class="form-label mb-2">Votre note</label>
+                                    <div class="rating-input">
+                                        {% for i in 5..1 %}
+                                            <input type="radio" name="note" value="{{ i }}" id="star{{ i }}" required>
+                                            <label for="star{{ i }}"><i class="bi bi-star-fill"></i></label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="commentaire" class="form-label">Votre commentaire</label>
+                                    <textarea class="form-control" id="commentaire" name="commentaire" rows="4" required placeholder="Partagez votre expérience..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-book w-auto px-5">Publier</button>
+                            </form>
+                        </div>
+                    {% else %}
+                         {% if not reviewCount > 0 %}
+                             {# Only show this if there are no reviews and user can't review, to avoid clutter #}
+                         {% endif %}
+                         {# We can hide the "You must book" message if it's too intrusive, or keep it subtle #}
+                         <div class="alert alert-info mt-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Vous devez avoir réservé et terminé ce service pour pouvoir laisser un avis.
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        {# Sidebar #}
+        <div class="service-sidebar">
+            <div class="price-card">
+                {% if service.prix %}
+                    <div class="price-amount">{{ service.prix }} <span class="fs-4">TND</span></div>
+                    <div class="price-unit">par prestation</div>
+                {% else %}
+                    <div class="price-amount">Sur devis</div>
+                {% endif %}
+            </div>
+
+            {% if service.prestataire %}
+                <div class="provider-info">
+                    <div class="provider-avatar">
+                        {{ service.prestataire.user.prenom|first|upper }}{{ service.prestataire.user.nom|first|upper }}
+                    </div>
+                    <div class="provider-details">
+                        <h4>{{ service.prestataire.user.nom }} {{ service.prestataire.user.prenom }}</h4>
+                        <p>Prestataire certifié</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if app.user %}
+                {% if not service.prestataire or not service.prestataire.user or service.prestataire.user != app.user %}
+                    <a href="{{ path('app_reservation_new', {'id': service.id}) }}" class="action-btn btn-book">
+                        Réserver maintenant
+                    </a>
+                {% endif %}
+                
+                {% if is_granted('ROLE_CLIENT') and service.prestataire %}
+                    <a href="{{ path('app_chat_start', {'prestataireId': service.prestataire.id, 'service': service.id}) }}" class="action-btn btn-contact">
+                        <i class="bi bi-chat-dots me-2"></i>Contacter
+                    </a>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-light mb-3 text-center small">
+                    Connectez-vous pour réserver
+                </div>
+                <a href="{{ path('app_login') }}" class="action-btn btn-book">
+                    Se connecter
+                </a>
+                <a href="{{ path('app_register') }}" class="action-btn btn-contact">
+                    S'inscrire
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% include 'partials/footer.html.twig' %}
+{% endblock %}

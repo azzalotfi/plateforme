@@ -1,0 +1,242 @@
+/* Client Dashboard Styles (Provider Style) */
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Welcome Section */
+.welcome-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+}
+
+.welcome-section h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.welcome-section p {
+    font-size: 1.25rem;
+    opacity: 0.9;
+}
+
+/* Statistics Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 1rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Section */
+.section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.view-all {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.view-all:hover {
+    text-decoration: underline;
+}
+
+/* Table */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: #f9fafb;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    color: #6b7280;
+}
+
+.table tr:hover {
+    background: #f9fafb;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-en-attente,
+.status-en-cours {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-complete,
+.status-complétée,
+.status-termine {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-annulee {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Services Grid */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.service-card {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.2s;
+    border: 1px solid #e5e7eb;
+}
+
+.service-card:hover {
+    transform: translateY(-4px);
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.service-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #e0e7ff;
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 1rem;
+}
+
+.service-card h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.service-category {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.service-price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #4f46e5;
+    margin-bottom: 1rem;
+}
+
+.service-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #4f46e5;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.service-btn:hover {
+    background: #4338ca;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #9ca3af;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+    display: block;
+}

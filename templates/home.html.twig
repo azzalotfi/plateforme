@@ -124,7 +124,11 @@
                 {% for service in services %}
                     <div class="service-card-full">
                         <div class="service-card-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80" alt="{{ service.nomService }}" class="service-card-image" loading="lazy">
+                            {% if service.image %}
+                                <img src="{{ asset(service.image) }}" alt="{{ service.nomService }}" class="service-card-image" loading="lazy">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80" alt="{{ service.nomService }}" class="service-card-image" loading="lazy">
+                            {% endif %}
                             <span class="service-category-tag">{{ service.categorie ?? 'Service' }}</span>
                         </div>
                         <div class="service-card-content">
@@ -145,7 +149,14 @@
                                         Prix sur demande
                                     {% endif %}
                                 </span>
-                                <button class="reserve-btn">Réserver</button>
+                                <div class="d-flex gap-2 flex-nowrap">
+                                    <a href="{{ path('app_service_show', {'id': service.id}) }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-eye"></i> Voir détails
+                                    </a>
+                                    {% if not app.user or (not service.prestataire or not service.prestataire.user or service.prestataire.user != app.user) %}
+                                        <a href="{{ path('app_reservation_new', {'id': service.id}) }}" class="reserve-btn">Réserver</a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -194,221 +205,4 @@
 
     {% include 'partials/footer.html.twig' %}
 
-    <script>
-    // I18N minimal FR/EN pour la page d'accueil
-    (function () {
-        const t = {
-            fr: {
-                badge_text: 'Plateforme N°1 en Tunisie',
-                hero_title: 'Trouvez le prestataire parfait',
-                hero_description: 'Connectez-vous avec des professionnels qualifiés pour tous vos besoins',
-                btn_find_service: 'Trouver un service →',
-                btn_become_provider: 'Devenir prestataire',
-                stat_users: 'Utilisateurs actifs',
-                stat_services: 'Services complétés',
-                stat_rating: 'Note moyenne',
-                stat_satisfaction: 'Satisfaction client',
-                overlay_reviews: '1000+ avis vérifiés',
-                why_choose_badge: 'Pourquoi nous choisir',
-                why_choose_title: 'Pourquoi nous choisir',
-                why_choose_description: 'Nous offrons une expérience unique pour connecter clients et prestataires de services professionnels',
-                feature_verified: 'Prestataires vérifiés',
-                feature_verified_desc: 'Tous nos prestataires sont vérifiés et évalués',
-                feature_secure: 'Paiement sécurisé',
-                feature_secure_desc: 'Système de points sécurisé et transparent',
-                feature_support: 'Support 24/7',
-                feature_support_desc: 'Notre équipe est toujours là pour vous aider',
-                services_title: 'Nos Services',
-                services_description: 'Découvrez nos meilleurs professionnels',
-                btn_view_all: 'Voir tous les services →',
-                price_from: 'À partir de',
-                price_on_demand: 'Prix sur demande',
-                btn_reserve: 'Réserver',
-                how_it_works_title: 'Comment ça marche ?',
-                how_it_works_description: 'Trouvez le professionnel parfait en quelques clics',
-                step1_title: 'Parcourez les services',
-                step1_desc: 'Explorez notre catalogue de professionnels qualifiés dans différents domaines',
-                step2_title: 'Réservez en ligne',
-                step2_desc: 'Choisissez votre prestataire et réservez directement sur la plateforme',
-                step3_title: 'Profitez du service',
-                step3_desc: 'Recevez votre service et laissez votre avis pour aider la communauté',
-                cta_title: 'Prêt à trouver le service parfait ?',
-                cta_description: 'Rejoignez des milliers d\'utilisateurs satisfaits et trouvez le professionnel qu\'il vous faut en quelques clics',
-                btn_start_now: 'Commencer maintenant →'
-            },
-            en: {
-                badge_text: 'N°1 Platform in Tunisia',
-                hero_title: 'Find the perfect provider',
-                hero_description: 'Connect with qualified professionals for all your needs',
-                btn_find_service: 'Find a service →',
-                btn_become_provider: 'Become a provider',
-                stat_users: 'Active users',
-                stat_services: 'Completed services',
-                stat_rating: 'Average rating',
-                stat_satisfaction: 'Client satisfaction',
-                overlay_reviews: '1000+ verified reviews',
-                why_choose_badge: 'Why choose us',
-                why_choose_title: 'Why choose us',
-                why_choose_description: 'We offer a unique experience to connect clients and professional service providers',
-                feature_verified: 'Verified providers',
-                feature_verified_desc: 'All our providers are verified and rated',
-                feature_secure: 'Secure payment',
-                feature_secure_desc: 'Secure and transparent points system',
-                feature_support: '24/7 Support',
-                feature_support_desc: 'Our team is always here to help you',
-                services_title: 'Our Services',
-                services_description: 'Discover our best professionals',
-                btn_view_all: 'View all services →',
-                price_from: 'From',
-                price_on_demand: 'Price on demand',
-                btn_reserve: 'Reserve',
-                how_it_works_title: 'How it works?',
-                how_it_works_description: 'Find the perfect professional in a few clicks',
-                step1_title: 'Browse services',
-                step1_desc: 'Explore our catalog of qualified professionals in different fields',
-                step2_title: 'Book online',
-                step2_desc: 'Choose your provider and book directly on the platform',
-                step3_title: 'Enjoy the service',
-                step3_desc: 'Receive your service and leave your review to help the community',
-                cta_title: 'Ready to find the perfect service?',
-                cta_description: 'Join thousands of satisfied users and find the professional you need in a few clicks',
-                btn_start_now: 'Start now →'
-            }
-        };
-
-        function applyLang(lang) {
-            const dict = t[lang] || t.fr;
-            
-            // Hero section
-            const badgeText = document.querySelector('.badge span:last-child');
-            if (badgeText) badgeText.textContent = dict.badge_text;
-            
-            const heroTitle = document.querySelector('.hero-title');
-            if (heroTitle) heroTitle.textContent = dict.hero_title;
-            
-            const heroDesc = document.querySelector('.hero-description');
-            if (heroDesc) heroDesc.textContent = dict.hero_description;
-            
-            const btnFindService = document.querySelector('.hero-buttons .btn-gradient');
-            if (btnFindService) btnFindService.textContent = dict.btn_find_service;
-            
-            const btnBecomeProvider = document.querySelector('.hero-buttons .btn-outline');
-            if (btnBecomeProvider) btnBecomeProvider.textContent = dict.btn_become_provider;
-            
-            // Stats
-            const statLabels = document.querySelectorAll('.stat-label');
-            if (statLabels.length >= 4) {
-                statLabels[0].textContent = dict.stat_users;
-                statLabels[1].textContent = dict.stat_services;
-                statLabels[2].textContent = dict.stat_rating;
-                statLabels[3].textContent = dict.stat_satisfaction;
-            }
-            
-            // Overlay
-            const overlayText = document.querySelector('.overlay-text');
-            if (overlayText) overlayText.textContent = dict.overlay_reviews;
-            
-            // Why choose us
-            const whyBadge = document.querySelector('.why-choose-us .section-badge span:last-child');
-            if (whyBadge) whyBadge.textContent = dict.why_choose_badge;
-            
-            const whyTitle = document.querySelector('.why-choose-us .section-title');
-            if (whyTitle) whyTitle.textContent = dict.why_choose_title;
-            
-            const whyDesc = document.querySelector('.why-choose-us .section-description');
-            if (whyDesc) whyDesc.textContent = dict.why_choose_description;
-            
-            const featureTitles = document.querySelectorAll('.feature-title');
-            const featureDescs = document.querySelectorAll('.feature-description');
-            if (featureTitles.length >= 3 && featureDescs.length >= 3) {
-                featureTitles[0].textContent = dict.feature_verified;
-                featureDescs[0].textContent = dict.feature_verified_desc;
-                featureTitles[1].textContent = dict.feature_secure;
-                featureDescs[1].textContent = dict.feature_secure_desc;
-                featureTitles[2].textContent = dict.feature_support;
-                featureDescs[2].textContent = dict.feature_support_desc;
-            }
-            
-            // Services section
-            const servicesTitle = document.querySelector('.services .section-title');
-            if (servicesTitle) servicesTitle.textContent = dict.services_title;
-            
-            const servicesDesc = document.querySelector('.services .section-description');
-            if (servicesDesc) servicesDesc.textContent = dict.services_description;
-            
-            const btnViewAll = document.querySelector('.services-header .btn-outline');
-            if (btnViewAll) btnViewAll.textContent = dict.btn_view_all;
-            
-            // Service cards
-            const priceFrom = document.querySelectorAll('.service-price');
-            priceFrom.forEach(el => {
-                const text = el.textContent;
-                if (text.includes('À partir de')) {
-                    const price = text.match(/(\d+)/);
-                    if (price) {
-                        el.innerHTML = dict.price_from + ' <span>' + price[1] + ' TND</span>';
-                    }
-                } else if (text.includes('Prix sur demande')) {
-                    el.textContent = dict.price_on_demand;
-                }
-            });
-            
-            const reserveBtns = document.querySelectorAll('.reserve-btn');
-            reserveBtns.forEach(btn => {
-                if (btn.textContent.includes('Réserver')) {
-                    btn.textContent = dict.btn_reserve;
-                }
-            });
-            
-            // How it works
-            const howTitle = document.querySelector('.how-it-works .section-title');
-            if (howTitle) howTitle.textContent = dict.how_it_works_title;
-            
-            const howDesc = document.querySelector('.how-it-works .section-description');
-            if (howDesc) howDesc.textContent = dict.how_it_works_description;
-            
-            const stepTitles = document.querySelectorAll('.step-title');
-            const stepDescs = document.querySelectorAll('.step-description');
-            if (stepTitles.length >= 3 && stepDescs.length >= 3) {
-                stepTitles[0].textContent = dict.step1_title;
-                stepDescs[0].textContent = dict.step1_desc;
-                stepTitles[1].textContent = dict.step2_title;
-                stepDescs[1].textContent = dict.step2_desc;
-                stepTitles[2].textContent = dict.step3_title;
-                stepDescs[2].textContent = dict.step3_desc;
-            }
-            
-            // CTA
-            const ctaTitle = document.querySelector('.cta-title');
-            if (ctaTitle) ctaTitle.textContent = dict.cta_title;
-            
-            const ctaDesc = document.querySelector('.cta-description');
-            if (ctaDesc) ctaDesc.textContent = dict.cta_description;
-            
-            const btnStartNow = document.querySelector('.cta .btn-white');
-            if (btnStartNow) btnStartNow.textContent = dict.btn_start_now;
-            
-            document.documentElement.setAttribute('lang', lang);
-            localStorage.setItem('lang', lang);
-        }
-
-        // Écouter les changements du sélecteur de langue
-        const langSelect = document.getElementById('langSelect');
-        if (langSelect) {
-            langSelect.addEventListener('change', function () {
-                applyLang(this.value);
-            });
-        }
-
-        // Écouter l'événement personnalisé de changement de langue
-        document.addEventListener('langchange', function (e) {
-            applyLang(e.detail.lang);
-        });
-
-        // Appliquer la langue au chargement
-        const storedLang = localStorage.getItem('lang') || 'fr';
-        applyLang(storedLang);
-    })();
-    </script>
 {% endblock %}
-

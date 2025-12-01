@@ -11,42 +11,53 @@
 
     <div class="page-container">
         <div class="container">
-            <h1>Ajouter un service</h1>
+            <h1 data-i18n="{{ is_edit|default(false) ? 'edit_service_title' : 'add_service_title' }}">
+                {{ is_edit|default(false) ? 'Modifier le service' : 'Ajouter un service' }}
+            </h1>
 
             {% for message in app.flashes('success') %}
                 <div class="flash-success">{{ message }}</div>
             {% endfor %}
 
-            <form method="post" action="{{ path('services_new') }}" class="service-form" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:800px;">
+            <form method="post" action="{{ path('services_new') }}{{ is_edit|default(false) ? '?edit=' ~ service.id : '' }}" enctype="multipart/form-data" class="service-form" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:800px;">
                 <div style="grid-column: span 2;">
-                    <label for="nomService">Nom du service</label>
-                    <input id="nomService" name="nomService" type="text" required style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
+                    <label for="nomService" data-i18n="add_service_label_name">Nom du service</label>
+                    <input id="nomService" name="nomService" type="text" required value="{{ service ? service.nomService : '' }}" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
                 </div>
                 <div>
-                    <label for="categorie">Catégorie</label>
-                    <input id="categorie" name="categorie" type="text" placeholder="Plomberie, Peinture..." style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
+                    <label for="categorie" data-i18n="add_service_label_category">Catégorie</label>
+                    <input id="categorie" name="categorie" type="text" placeholder="Plomberie, Peinture..." value="{{ service ? service.categorie : '' }}" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
                 </div>
                 <div>
-                    <label for="prix">Prix (TND)</label>
-                    <input id="prix" name="prix" type="number" step="0.01" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
-                </div>
-                <div>
-                    <label for="duree">Durée (minutes)</label>
-                    <input id="duree" name="duree" type="number" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
+                    <label for="prix" data-i18n="add_service_label_price">Prix (TND)</label>
+                    <input id="prix" name="prix" type="number" step="0.01" value="{{ service ? service.prix : '' }}" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
                 </div>
                 <div style="grid-column: span 2;">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" rows="4" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;"></textarea>
+                    <label for="description" data-i18n="add_service_label_description">Description</label>
+                    <textarea id="description" name="description" rows="4" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">{{ service ? service.description : '' }}</textarea>
+                </div>
+                <div style="grid-column: span 2;">
+                    <label for="image">Image du service</label>
+                    {% if service and service.image %}
+                        <div style="margin-bottom: 10px;">
+                            <img src="{{ asset(service.image) }}" alt="Service image" style="max-height: 100px; border-radius: 8px;">
+                        </div>
+                    {% endif %}
+                    <input id="image" name="image" type="file" accept="image/*" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;">
+                    <small style="color: #6b7280; display: block; margin-top: 0.5rem;">Formats acceptés: JPG, PNG, GIF (max 5MB)</small>
                 </div>
                 <div style="grid-column: span 2;display:flex;gap:12px;">
-                    <a href="{{ path('services') }}" class="btn btn-outline">Annuler</a>
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a href="{{ is_granted('ROLE_PRESTATAIRE') ? path('app_provider_dashboard') : path('services') }}" class="btn btn-outline" data-i18n="add_service_btn_cancel">Annuler</a>
+                    <button type="submit" class="btn btn-primary" data-i18n="add_service_btn_save">
+                        {{ is_edit|default(false) ? 'Mettre à jour' : 'Enregistrer' }}
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
     {% include 'partials/footer.html.twig' %}
+
 {% endblock %}
 
 

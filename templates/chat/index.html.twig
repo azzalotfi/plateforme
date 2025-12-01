@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Messagerie - ServicePro{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/chat.css') }}?v={{ 'now'|date('U') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+{% include 'partials/header.html.twig' %}
+
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <div class="chat-header">
+            <h2><i class="bi bi-chat-dots"></i> Conversations</h2>
+        </div>
+        
+        <div class="conversations-list">
+            {% if conversations|length > 0 %}
+                {% for conversation in conversations %}
+                    {% set otherUser = app.user in conversation.client.user ? conversation.prestataire.user : conversation.client.user %}
+                    {% set unreadCount = conversation.getUnreadCount(app.user) %}
+                    
+                    <a href="{{ path('app_chat_conversation', {'id': conversation.id}) }}" 
+                       class="conversation-item {% if unreadCount > 0 %}unread{% endif %}">
+                        <div class="conversation-avatar">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">
+                                {{ otherUser.nom }} {{ otherUser.prenom }}
+                            </div>
+                            {% if conversation.service %}
+                                <div class="conversation-service">
+                                    <i class="bi bi-briefcase"></i> {{ conversation.service.nomService }}
+                                </div>
+                            {% endif %}
+                            {% set lastMessage = conversation.lastMessage %}
+                            {% if lastMessage %}
+                                <div class="conversation-preview">
+                                    {{ lastMessage.content|length > 50 ? lastMessage.content|slice(0, 50) ~ '...' : lastMessage.content }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="conversation-meta">
+                            {% if lastMessage %}
+                                <div class="conversation-time">
+                                    {{ lastMessage.createdAt|date('d/m H:i') }}
+                                </div>
+                            {% endif %}
+                            {% if unreadCount > 0 %}
+                                <span class="unread-badge">{{ unreadCount }}</span>
+                            {% endif %}
+                        </div>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-chat-left-text"></i>
+                    <p>Aucune conversation pour le moment</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="chat-main">
+        <div class="chat-placeholder">
+            <i class="bi bi-chat-square-text"></i>
+            <p>Sélectionnez une conversation pour commencer</p>
+        </div>
+    </div>
+</div>
+
+{% include 'partials/footer.html.twig' %}
+{% endblock %}

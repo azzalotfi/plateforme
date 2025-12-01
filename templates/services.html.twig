@@ -42,6 +42,14 @@
                 </div>
                 {# bouton d'ajout supprimé à la demande #}
             </div>
+            {% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div style="color: red; text-align: center; font-weight: bold; margin: 1rem 0;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
 
             <!-- Services Results -->
             <div class="services-results-header">
@@ -64,7 +72,11 @@
                          data-category="{{ (service.categorie ?? 'tous')|lower }}"
                          data-price="{{ service.prix is not null ? service.prix : 0 }}">
                         <div class="service-card-image-wrapper">
-                            <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80" alt="{{ service.nomService }}" class="service-card-image">
+                            {% if service.image %}
+                                <img src="{{ asset(service.image) }}" alt="{{ service.nomService }}" class="service-card-image">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1581578731117-104f2a863a30?w=800&q=80" alt="{{ service.nomService }}" class="service-card-image">
+                            {% endif %}
                             <span class="service-category-tag">{{ service.categorie ?? 'Service' }}</span>
                         </div>
                         <div class="service-card-content">
@@ -85,7 +97,19 @@
                                         Prix sur demande
                                     {% endif %}
                                 </span>
-                                <button class="reserve-btn">Réserver</button>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ path('app_service_show', {'id': service.id}) }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-eye"></i> Voir détails
+                                    </a>
+                                    {% if app.user and is_granted('ROLE_CLIENT') and service.prestataire %}
+                                        <a href="{{ path('app_chat_start', {'prestataireId': service.prestataire.id, 'service': service.id}) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-chat-dots"></i> Contacter
+                                        </a>
+                                    {% endif %}
+                                    {% if app.user and (not service.prestataire or not service.prestataire.user or service.prestataire.user != app.user) %}
+                                        <a href="{{ path('app_reservation_new', {'id': service.id}) }}" class="reserve-btn">Réserver</a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>

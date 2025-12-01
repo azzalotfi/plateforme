@@ -1,0 +1,309 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord Prestataire - ServicePro{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/provider-dashboard.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    {% include 'partials/header.html.twig' %}
+
+    <div class="dashboard-container">
+        <!-- Welcome Section -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem;">
+            <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;" data-i18n="provider_welcome">Bienvenue</h1>
+            <p style="font-size: 1.25rem; opacity: 0.9;">{{ user.nom }} {{ user.prenom }}</p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% for message in app.flashes('success') %}
+            <div style="background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #dbeafe; color: #3b82f6;">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+                <div class="stat-value">{{ stats.activeServices }}</div>
+                <div class="stat-label" data-i18n="provider_my_services">Services Actifs</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fef3c7; color: #f59e0b;">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="stat-value">{{ stats.totalReservations }}</div>
+                <div class="stat-label" data-i18n="provider_stat_reservations">Réservations</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #d1fae5; color: #10b981;">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div class="stat-value">{{ stats.totalEarnings|number_format(2) }} TND</div>
+                <div class="stat-label" data-i18n="provider_stat_earnings">Gains Totaux</div>
+            </div>
+        </div>
+
+        <!-- Mes Services -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-tools"></i>
+                    <span data-i18n="provider_my_services">Mes Services</span>
+                </h2>
+                <a href="{{ path('services_new') }}" class="btn-add">
+                    <i class="bi bi-plus-circle"></i>
+                    <span data-i18n="provider_btn_add_service">Ajouter un service</span>
+                </a>
+            </div>
+
+            {% if services|length > 0 %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Catégorie</th>
+                            <th>Prix</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in services %}
+                            <tr>
+                                <td style="font-weight: 600; color: #1f2937;">{{ service.nomService }}</td>
+                                <td>{{ service.categorie ?? 'N/A' }}</td>
+                                <td>{{ service.prix ? service.prix|number_format(2) ~ ' TND' : 'Sur demande' }}</td>
+                                <td>
+                                    {% if service.disponible %}
+                                        <span class="status-badge status-confirmed">Actif</span>
+                                    {% else %}
+                                        <span class="status-badge status-refused">Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('services_new') }}?edit={{ service.id }}" class="btn btn-edit">
+                                        <i class="bi bi-pencil"></i> Modifier
+                                    </a>
+                                    <button class="btn btn-delete" onclick="deleteService({{ service.id }}, '{{ service.nomService }}')">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <p data-i18n="provider_empty_services">Aucun service pour le moment</p>
+                    <a href="{{ path('services_new') }}" class="btn-add" style="margin-top: 1rem;">
+                        <span data-i18n="provider_btn_create_service">Créer votre premier service</span>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Mes Réservations -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-calendar-check"></i>
+                    <span data-i18n="provider_recent_reservations">Mes Réservations</span>
+                </h2>
+            </div>
+<!-- Flash Messages -->
+{% for message in app.flashes('success') %}
+    <div style="background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+    <div style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+        {{ message }}
+    </div>
+{% endfor %}
+
+
+
+            {% if reservations|length > 0 %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                            <tr id="reservation-{{ reservation.id }}">
+                                <td style="font-weight: 600; color: #1f2937;">
+                                    {{ reservation.client ? reservation.client.nom ~ ' ' ~ reservation.client.prenom : 'N/A' }}
+                                </td>
+                                <td>{{ reservation.service ? reservation.service.nomService : 'N/A' }}</td>
+                                <td>{{ reservation.dateReservation|date('d/m/Y') }}</td>
+                                <td>{{ reservation.montantTotal|number_format(2) }} TND</td>
+                                <td>
+                                    <span class="status-badge status-{{ reservation.statut|lower|replace({' ': '-', 'é': 'e'}) }}" id="status-{{ reservation.id }}">
+                                        {{ reservation.statut ?? 'En attente' }}
+                                    </span>
+                                </td>
+                   <td>
+    {% if reservation.statut == 'En attente' or reservation.statut == 'en_attente' %}
+        <!-- Bouton Accepter -->
+        <form method="POST" action="{{ path('app_provider_reservation_accept', {'id': reservation.id}) }}" style="display:inline;">
+            <button type="submit" class="btn btn-accept" 
+                    style="background-color: #28a745; color: white; margin-right: 5px;"
+                    onclick="return confirm('Êtes-vous sûr de vouloir accepter cette réservation ?');">
+                <i class="bi bi-check-circle"></i> Accepter
+            </button>
+        </form>
+
+        <!-- Bouton Refuser -->
+        <form method="POST" action="{{ path('app_reservation_refuse', {'id': reservation.id}) }}" style="display:inline;">
+            <button type="submit" class="btn btn-refuse" 
+                    style="background-color: #dc3545; color: white;"
+                    onclick="return confirm('Êtes-vous sûr de vouloir refuser cette réservation ?');">
+                <i class="bi bi-x-circle"></i> Refuser
+            </button>
+        </form>
+
+    {% elseif reservation.statut == 'Confirmée' %}
+        <!-- Bouton Terminer -->
+        <form method="POST" action="{{ path('app_reservation_complete', {'id': reservation.id}) }}" style="display:inline;">
+            <button type="submit" class="btn btn-complete" 
+                    style="background-color: #007bff; color: white;">
+                <i class="bi bi-check2-square"></i> Marquer comme terminé
+            </button>
+        </form>
+    {% else %}
+        <a href="{{ path('app_provider_reservation_show', {'id': reservation.id}) }}" 
+           class="btn btn-details" style="background-color: #6c757d; color: white;">
+            <i class="bi bi-eye"></i> Détails
+        </a>
+    {% endif %}
+</td>
+
+
+
+    
+</td>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-calendar-x"></i>
+                    <p data-i18n="provider_empty_reservations">Aucune réservation pour le moment</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+    {% include 'partials/footer.html.twig' %}
+
+    <script>
+        function deleteService(serviceId, serviceName) {
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer "${serviceName}" ?`)) {
+                return;
+            }
+
+            fetch(`/provider/service/${serviceId}/delete`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Erreur lors de la suppression');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erreur lors de la suppression');
+            });
+        }
+
+        function acceptReservation(reservationId) {
+            fetch(`/provider/reservation/${reservationId}/accept`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Erreur');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erreur');
+            });
+        }
+
+        
+  
+function completeReservation(reservationId) {
+    fetch(`/provider/reservation/${reservationId}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message); // affichage succès
+            location.reload();
+        } else {
+            alert(data.message || 'Erreur'); // affichage erreur
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Erreur lors du traitement');
+    });
+}
+
+
+function completeReservation(reservationId) {
+    const messageDiv = document.getElementById(`message-${reservationId}`);
+    messageDiv.textContent = 'Traitement...';
+
+    fetch(`/provider/reservation/${reservationId}/complete`, {
+        method: 'POST',
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+    .then(response => {
+        if (!response.ok) return response.text().then(text => { throw new Error(text) });
+        return response.text();
+    })
+    .then(text => {
+        messageDiv.textContent = text; // Affiche le message sous le tableau
+    })
+    .catch(error => {
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = error.message;
+    });
+}
+
+    </script>
+{% endblock %}

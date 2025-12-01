@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Notifications{% endblock %}
+
+{% block body %}
+{% include 'partials/header.html.twig' %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0 fw-bold">Notifications</h3>
+                </div>
+                <div class="card-body p-0">
+                    {% if notifications|length > 0 %}
+                        <div class="list-group list-group-flush">
+                            {% for notification in notifications %}
+                                <a href="#" onclick="markAsRead(event, {{ notification.id }}, '{{ notification.type }}', {{ notification.relatedEntityId ?? 'null' }})" class="list-group-item list-group-item-action p-4 {% if not notification.isRead %}bg-light{% endif %}">
+                                    <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle p-2 me-3 {% if not notification.isRead %}bg-primary text-white{% else %}bg-secondary text-white opacity-50{% endif %}">
+                                                <i class="bi bi-info-circle fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 {% if not notification.isRead %}fw-bold text-dark{% else %}text-muted{% endif %}">
+                                                    {{ notification.message }}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted ms-3">{{ notification.dateCreation|date('d/m/Y H:i') }}</small>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center p-5">
+                            <i class="bi bi-bell-slash fs-1 text-muted mb-3 d-block"></i>
+                            <p class="text-muted mb-0">Aucune notification pour le moment</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'partials/footer.html.twig' %}
+
+<script>
+function markAsRead(event, id, type, relatedId) {
+    event.preventDefault();
+    fetch(`/notification/${id}/read`, {
+        method: 'POST'
+    }).then(() => {
+        if (type === 'reservation' && relatedId) {
+            window.location.href = `/provider/reservation/${relatedId}`;
+        } else if (type === 'message' && relatedId) {
+            window.location.href = `/chat/conversation/${relatedId}`;
+        } else {
+            window.location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -16,7 +16,7 @@ security:
             form_login:
                 login_path: app_login      # Route du login
                 check_path: app_login      # Route pour vérifier le login
-                default_target_path: app_dashboard  # Rediriger vers le tableau de bord après connexion
+                success_handler: App\Security\LoginSuccessHandler
                 always_use_default_target_path: false
             logout:
                 path: app_logout

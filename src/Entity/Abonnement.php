@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
 
 #[ORM\Entity]
 class Abonnement
@@ -25,11 +26,25 @@ class Abonnement
     private float $prix;
 
     #[ORM\Column(type: 'string', length: 50)]
-    private string $statut; // actif / expiré / suspendu
+    private string $status; // pending, completed, canceled
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'abonnements')]
+    // Client qui réserve le service
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?User $client = null;
+
+    // Prestataire qui fournit le service
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $prestataire = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isPaidToPrestataire = false;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $transactionId = null; // Stripe ou autre référence paiement
+
+    // ---------- Getters & Setters ----------
 
     public function getIdAbo(): ?int
     {
@@ -80,25 +95,58 @@ class Abonnement
         return $this;
     }
 
-    public function getStatut(): string
+    public function getStatus(): string
     {
-        return $this->statut;
+        return $this->status;
     }
 
-    public function setStatut(string $statut): self
+    public function setStatus(string $status): self
     {
-        $this->statut = $statut;
+        $this->status = $status;
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getClient(): ?User
     {
-        return $this->user;
+        return $this->client;
     }
 
-    public function setUser(?User $user): self
+    public function setClient(?User $client): self
     {
-        $this->user = $user;
+        $this->client = $client;
+        return $this;
+    }
+
+    public function getPrestataire(): ?User
+    {
+        return $this->prestataire;
+    }
+
+    public function setPrestataire(?User $prestataire): self
+    {
+        $this->prestataire = $prestataire;
+        return $this;
+    }
+
+    public function getIsPaidToPrestataire(): bool
+    {
+        return $this->isPaidToPrestataire;
+    }
+
+    public function setIsPaidToPrestataire(bool $isPaidToPrestataire): self
+    {
+        $this->isPaidToPrestataire = $isPaidToPrestataire;
+        return $this;
+    }
+
+    public function getTransactionId(): ?string
+    {
+        return $this->transactionId;
+    }
+
+    public function setTransactionId(?string $transactionId): self
+    {
+        $this->transactionId = $transactionId;
         return $this;
     }
 }

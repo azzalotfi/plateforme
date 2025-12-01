@@ -1,0 +1,392 @@
+/* Premium Client Dashboard CSS */
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --body-bg: #f3f4f6;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+}
+
+.dashboard-container {
+    background-color: var(--body-bg);
+    background-image:
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.dashboard-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Welcome Section */
+.welcome-section {
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.welcome-section h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.025em;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.welcome-section p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    background: var(--primary-gradient);
+    color: white;
+    transform: scale(1.1) rotate(5deg);
+}
+
+.stat-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1;
+}
+
+.stat-content p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0.5rem 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Content Grid */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1.2fr;
+    gap: 2rem;
+}
+
+.content-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    height: 100%;
+}
+
+.card-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.card-header h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card-header h2 i {
+    color: #6366f1;
+}
+
+.view-all {
+    color: #6366f1;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: rgba(99, 102, 241, 0.1);
+    transition: all 0.2s;
+}
+
+.view-all:hover {
+    background: #6366f1;
+    color: white;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Reservations List */
+.reservations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.reservation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    transition: all 0.2s;
+}
+
+.reservation-item:hover {
+    transform: translateX(4px);
+    border-color: #6366f1;
+    box-shadow: var(--shadow-sm);
+}
+
+.reservation-info h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.reservation-date {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.reservation-date i {
+    color: #a855f7;
+}
+
+.reservation-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.75rem;
+}
+
+.status-en-attente,
+.status-en-cours {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #ffedd5;
+}
+
+.status-complete,
+.status-complétée,
+.status-termine {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #d1fae5;
+}
+
+.reservation-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+}
+
+/* Services Grid */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+}
+
+.service-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--primary-gradient);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.service-card:hover::before {
+    opacity: 1;
+}
+
+.service-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin: 0 auto 1rem;
+    transition: all 0.3s;
+}
+
+.service-card:hover .service-icon {
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 50%;
+}
+
+.service-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.service-category {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.service-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #6366f1;
+    margin-bottom: 1rem;
+}
+
+.service-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    background: white;
+    color: #6366f1;
+    border: 2px solid #6366f1;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.service-btn:hover {
+    background: #6366f1;
+    color: white;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #e5e7eb;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-wrapper {
+        padding: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-section h1 {
+        font-size: 2rem;
+    }
+}

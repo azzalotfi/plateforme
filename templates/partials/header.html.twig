@@ -24,21 +24,37 @@
                 <span class="logo-text">ServicePro</span>
             </a>
             <nav class="nav">
-                <a href="{{ path('home') }}" class="nav-link {% if app.request.attributes.get('_route') == 'home' %}active{% endif %}">Accueil</a>
-                <a href="{{ path('services') }}" class="nav-link {% if app.request.attributes.get('_route') == 'services' %}active{% endif %}">Services</a>
+                <a href="{{ path('home') }}" class="nav-link {% if app.request.attributes.get('_route') == 'home' %}active{% endif %}" data-i18n="nav_home">Accueil</a>
+                <a href="{{ path('services') }}" class="nav-link {% if app.request.attributes.get('_route') == 'services' %}active{% endif %}" data-i18n="nav_services">Services</a>
+                <a href="{{ path('app_about') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_about' %}active{% endif %}" data-i18n="nav_about">À propos</a>
+                <a href="{{ path('app_ai_assistant') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_ai_assistant' %}active{% endif %}" data-i18n="nav_ai_assistant">🤖 Assistant IA</a>
+                {% if app.user and (app.user.role == 'prestataire' or 'ROLE_PRESTATAIRE' in app.user.roles) %}
+                    <a href="{{ path('app_provider_dashboard') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_provider_dashboard' %}active{% endif %}" data-i18n="nav_dashboard">Tableau de bord</a>
+                {% elseif app.user and (app.user.role == 'client' or 'ROLE_CLIENT' in app.user.roles) %}
+                    <a href="{{ path('app_dashboard') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_dashboard' %}active{% endif %}" data-i18n="nav_dashboard">Tableau de bord</a>
+                {% elseif app.user and (app.user.role == 'admin' or 'ROLE_ADMIN' in app.user.roles) %}
+                    <a href="{{ path('app_admin_dashboard') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_admin_dashboard' %}active{% endif %}" data-i18n="nav_dashboard">Tableau de bord Admin</a>
+                {% endif %}
             </nav>
             <div class="header-actions">
-                 {% if app.user and app.user.role == 'client' %}
-                <a href="{{ path('app_dashboard') }}">Tableau de bord</a>
-            {% endif %}
-        </div>
+            </div>
         <nav class="nav">
             {% if app.user %}
-                  <a href="{{ path('paiement') }}">Paiement</a>
+                  <a href="{{ path('paiement') }}" data-i18n="nav_payment">Paiement</a>
            
-            <div class="nav-right">
-                <a href="{{ path('app_profile') }}">Mon Profil</a>
-               
+            <div class="nav-right d-flex align-items-center">
+                {{ render(controller('App\\Controller\\NotificationController::header')) }}
+                
+                {# Chat Icon #}
+                <a href="{{ path('app_chat') }}" class="position-relative me-3" id="chatIcon" style="text-decoration: none; color: inherit;">
+                    <i class="bi bi-chat-dots fs-4"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success" id="chatUnreadBadge" style="font-size: 0.6rem; display: none;">
+                        0
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                </a>
+                
+                <a href="{{ path('app_profile') }}" data-i18n="nav_profile">Mon Profil</a>
             </div>
              {% endif %}
         </nav>
@@ -49,13 +65,13 @@
                     </select>
                     
                    {% if not app.user %}
-    <a href="{{ path('app_login') }}" class="login-link">Connexion</a>
-    <a href="{{ path('app_register') }}" class="signup-btn">S'inscrire</a>
+    <a href="{{ path('app_login') }}" class="login-link" data-i18n="nav_login">Connexion</a>
+    <a href="{{ path('app_register') }}" class="signup-btn" data-i18n="nav_register">S'inscrire</a>
 {% endif %}
 <nav class="nav">
             {% if app.user %}
               
-                <a href="{{ path('app_logout') }}" class="signup-btn">Déconnexion</a>
+                <a href="{{ path('app_logout') }}" class="signup-btn" data-i18n="nav_logout">Déconnexion</a>
             </div>
              {% endif %}
         </nav>
@@ -63,4 +79,29 @@
         </div>
     </div>
 </header>
+
+<script>
+// Poll for unread chat messages count
+{% if app.user %}
+function updateChatUnreadCount() {
+    fetch('/chat/unread-count')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.getElementById('chatUnreadBadge');
+            if (data.count > 0) {
+                badge.textContent = data.count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        })
+        .catch(error => console.error('Chat count error:', error));
+}
+
+// Initial update and poll every 30 seconds
+updateChatUnreadCount();
+setInterval(updateChatUnreadCount, 30000);
+{% endif %}
+</script>
+
 

@@ -1,0 +1,44 @@
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notification-dropdown-anim {
+    animation: slideDownFade 0.3s ease-out forwards;
+}
+
+.notification-item-hover:hover {
+    background-color: #f3f4f6;
+    /* Light gray hover */
+}
+
+/* Arrow for the dropdown */
+.notification-arrow::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    right: 14px;
+    /* Align with the bell icon center roughly */
+    width: 16px;
+    height: 16px;
+    background-color: #ffffff;
+    transform: rotate(45deg);
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.04);
+    z-index: -1;
+}
+
+@media (max-width: 576px) {
+    #notificationMenu {
+        width: 90vw !important;
+        right: -50% !important;
+        transform: translateX(10%) !important;
+        left: auto !important;
+    }
+}

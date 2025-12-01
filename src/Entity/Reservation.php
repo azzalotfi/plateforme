@@ -26,6 +26,9 @@ class Reservation
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $montantTotal = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $lieu = null;
+
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Client $client = null;
@@ -95,6 +98,17 @@ class Reservation
     public function setMontantTotal(?float $montantTotal): self
     {
         $this->montantTotal = $montantTotal;
+        return $this;
+    }
+
+    public function getLieu(): ?string
+    {
+        return $this->lieu;
+    }
+
+    public function setLieu(?string $lieu): self
+    {
+        $this->lieu = $lieu;
         return $this;
     }
 

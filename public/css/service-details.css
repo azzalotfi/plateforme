@@ -1,0 +1,283 @@
+/* Service Details Page Styling */
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --text-dark: #1f2937;
+    --text-muted: #6b7280;
+    --bg-light: #f9fafb;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --card-radius: 16px;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+}
+
+.service-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Hero Image */
+.service-hero {
+    position: relative;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+    height: 400px;
+}
+
+.service-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.service-hero:hover img {
+    transform: scale(1.02);
+}
+
+/* Layout Grid */
+.service-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (max-width: 992px) {
+    .service-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Main Content */
+.service-main {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+}
+
+.service-header {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1.5rem;
+}
+
+.service-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: #e0e7ff;
+    color: var(--primary-color);
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.service-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.service-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.service-meta i {
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+}
+
+.service-description h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.service-description p {
+    line-height: 1.7;
+    color: #4b5563;
+}
+
+/* Sidebar (Sticky) */
+.service-sidebar {
+    position: sticky;
+    top: 2rem;
+    background: white;
+    padding: 2rem;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    border: 1px solid #e5e7eb;
+}
+
+.price-card {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.price-amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.price-unit {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.provider-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f3f4f6;
+    border-radius: 12px;
+}
+
+.provider-avatar {
+    width: 48px;
+    height: 48px;
+    background: #e0e7ff;
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.provider-details h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.provider-details p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.action-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-bottom: 1rem;
+}
+
+.btn-book {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+}
+
+.btn-book:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    color: white;
+}
+
+.btn-contact {
+    background: white;
+    border: 2px solid #e5e7eb;
+    color: var(--text-dark);
+}
+
+.btn-contact:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #f9fafb;
+}
+
+/* Reviews Section */
+.reviews-section {
+    margin-top: 3rem;
+}
+
+.reviews-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.review-card {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    border: 1px solid #f3f4f6;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.reviewer-name {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.review-date {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.star-rating {
+    color: #fbbf24;
+    font-size: 0.9rem;
+}
+
+.review-form {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    margin-top: 2rem;
+}
+
+.rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+.rating-input input {
+    display: none;
+}
+
+.rating-input label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #d1d5db;
+    transition: color 0.2s;
+}
+
+.rating-input input:checked~label,
+.rating-input label:hover,
+.rating-input label:hover~label {
+    color: #fbbf24;
+}

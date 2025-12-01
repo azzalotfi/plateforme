@@ -1,0 +1,163 @@
+<div class="dropdown d-inline-block me-3" style="position: relative;">
+    <button class="btn btn-link text-dark p-0 position-relative" type="button" id="notificationDropdown" aria-expanded="false">
+        <i class="bi bi-bell fs-4"></i>
+        {% if unreadCount > 0 %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                {{ unreadCount }}
+                <span class="visually-hidden">unread messages</span>
+            </span>
+        {% endif %}
+    </button>
+
+    <ul class="dropdown-menu shadow-lg border-0" id="notificationMenu" 
+        style="width: 360px; 
+               max-height: 80vh; 
+               overflow-y: auto; 
+               display: none; 
+               position: absolute; 
+               right: 0; 
+               left: auto; 
+               top: 100%; 
+               margin-top: 10px;
+               z-index: 9999; 
+               border-radius: 8px; 
+               padding: 0; 
+               background-color: #ffffff; 
+               box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+        <li class="px-3 py-3 d-flex justify-content-between align-items-center bg-white sticky-top border-bottom" style="border-top-left-radius: 8px; border-top-right-radius: 8px;">
+            <h6 class="mb-0 fw-bold text-dark" style="font-size: 1.25rem;">Notifications</h6>
+        </li>
+        
+        {% if notifications|length > 0 %}
+            {% for notification in notifications %}
+                <li class="border-bottom border-light">
+                    <a class="dropdown-item p-3 position-relative notification-item-hover d-flex align-items-start gap-3 {% if not notification.isRead %}bg-purple-50{% endif %}" href="#" onclick="markAsRead(event, {{ notification.id }}, '{{ notification.type }}', {{ notification.relatedEntityId ?? 'null' }})" style="white-space: normal; transition: background-color 0.2s; {% if not notification.isRead %}background-color: #f5f3ff;{% endif %}">
+                        <div class="flex-shrink-0 pt-1">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; {% if notification.type == 'reservation' %}background: #e0f2fe; color: #0284c7;{% else %}background: #f3f4f6; color: #4b5563;{% endif %}">
+                                {% if notification.type == 'reservation' %}
+                                    <i class="bi bi-calendar4-event fs-6"></i>
+                                {% else %}
+                                    <i class="bi bi-info-circle-fill fs-6"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-1 fw-semibold text-dark" style="font-size: 0.9rem; line-height: 1.4;">
+                                {{ notification.message|raw }}
+                            </p>
+                            <small class="text-muted" style="font-size: 0.75rem;">
+                                {{ notification.dateCreation|date('d M à H:i') }}
+                            </small>
+                        </div>
+                        {% if not notification.isRead %}
+                            <div class="flex-shrink-0 pt-2">
+                                <span class="d-inline-block rounded-circle bg-primary" style="width: 8px; height: 8px;"></span>
+                            </div>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li class="p-5 text-center">
+                <div class="mb-3 text-muted opacity-50">
+                    <i class="bi bi-bell-slash fs-1"></i>
+                </div>
+                <p class="text-muted mb-0 fw-medium">Aucune notification pour le moment</p>
+            </li>
+        {% endif %}
+        
+        <li class="p-2 bg-light sticky-bottom border-top">
+            <div class="d-flex gap-2">
+                <button onclick="deleteAllNotifications(event)" class="btn btn-sm btn-outline-danger flex-grow-1">
+                    <i class="bi bi-trash me-1"></i> Tout supprimer
+                </button>
+                <a class="btn btn-sm btn-outline-primary flex-grow-1" href="{{ path('app_notifications') }}">
+                    <i class="bi bi-clock-history me-1"></i> Historique
+                </a>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<script>
+function deleteAllNotifications(event) {
+    event.preventDefault();
+    if (confirm('Voulez-vous vraiment supprimer toutes les notifications ?')) {
+        fetch('/notification/delete-all', {
+            method: 'POST'
+        }).then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  window.location.reload();
+              }
+          });
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('notificationDropdown');
+    const menu = document.getElementById('notificationMenu');
+
+    if (btn && menu) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (menu.style.display === 'none' || menu.style.display === '') {
+                menu.style.display = 'block';
+                btn.setAttribute('aria-expanded', 'true');
+            } else {
+                menu.style.display = 'none';
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.style.display = 'none';
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+});
+
+function markAsRead(event, id, type, relatedId) {
+    event.preventDefault();
+    fetch(`/notification/${id}/read`, {
+        method: 'POST'
+    }).then(() => {
+        if (type === 'reservation' && relatedId) {
+            window.location.href = `/provider/reservation/${relatedId}`;
+        } else if (type === 'message' && relatedId) {
+            window.location.href = `/chat/conversation/${relatedId}`;
+        } else {
+            window.location.reload();
+        }
+    });
+}
+
+// Poll for unread notifications every 30 seconds
+setInterval(() => {
+    fetch('/notification/unread-count')
+        .then(response => response.json())
+        .then(data => {
+            const badge = document.querySelector('#notificationDropdown .badge');
+            const btn = document.querySelector('#notificationDropdown');
+            
+            if (data.count > 0) {
+                if (badge) {
+                    badge.textContent = data.count;
+                } else {
+                    // Create badge if it doesn't exist
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger';
+                    newBadge.style.fontSize = '0.6rem';
+                    newBadge.textContent = data.count;
+                    newBadge.innerHTML += '<span class="visually-hidden">unread messages</span>';
+                    btn.appendChild(newBadge);
+                }
+            } else {
+                if (badge) {
+                    badge.remove();
+                }
+            }
+        });
+}, 30000); // 30 seconds
+</script>

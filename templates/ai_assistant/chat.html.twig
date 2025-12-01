@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Assistant IA - ServicePro{% endblock %}
+
+{% block stylesheets %}
+    <link href="{{ asset('css/ai-assistant.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    {% include 'partials/header.html.twig' %}
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="ai_assistant_title">Assistant IA</h1>
+                        <p class="text-gray-600" data-i18n="ai_assistant_subtitle">Posez vos questions sur nos services</p>
+                    </div>
+                    <div class="text-right">
+                        {% if service_available %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <i class="bi bi-circle-fill text-green-500 mr-2" style="font-size: 8px;"></i>
+                                <span data-i18n="ai_service_online">En ligne</span>
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                <i class="bi bi-circle-fill text-red-500 mr-2" style="font-size: 8px;"></i>
+                                <span data-i18n="ai_service_offline">Hors ligne</span>
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Container -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <!-- Chat History -->
+                <div id="chat-history" class="h-96 overflow-y-auto p-6 bg-gray-50">
+                    <div class="text-center text-gray-500 py-8" id="empty-state">
+                        <i class="bi bi-chat-dots text-6xl mb-4"></i>
+                        <p data-i18n="ai_start_conversation">Commencez une conversation avec l'assistant</p>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="border-t border-gray-200 bg-white p-4">
+                    <form id="chat-form" class="flex gap-3">
+                        <input 
+                            type="text" 
+                            id="message-input" 
+                            name="message" 
+                            class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Tapez votre message..."
+                            data-i18n-placeholder="ai_input_placeholder"
+                            required
+                            {% if not service_available %}disabled{% endif %}
+                        >
+                        <button 
+                            type="submit" 
+                            id="send-button"
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                            {% if not service_available %}disabled{% endif %}
+                        >
+                            <i class="bi bi-send"></i>
+                            <span data-i18n="ai_send">Envoyer</span>
+                        </button>
+                    </form>
+                    
+                    <div class="mt-3 flex justify-between items-center">
+                        <button 
+                            type="button" 
+                            id="clear-history-button"
+                            class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
+                        >
+                            <i class="bi bi-trash"></i>
+                            <span data-i18n="ai_clear_history">Effacer l'historique</span>
+                        </button>
+                        
+                        {% if not service_available %}
+                            <p class="text-sm text-red-600" data-i18n="ai_service_unavailable">
+                                Service temporairement indisponible
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-start gap-3">
+                    <i class="bi bi-info-circle text-blue-600 text-xl mt-0.5"></i>
+                    <div class="text-sm text-blue-800">
+                        <p class="font-semibold mb-1" data-i18n="ai_info_title">À propos de l'assistant</p>
+                        <p data-i18n="ai_info_description">
+                            Cet assistant répond uniquement aux questions concernant les services disponibles sur notre plateforme. 
+                            Il utilise l'intelligence artificielle pour vous fournir des informations précises basées sur notre base de données.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% include 'partials/footer.html.twig' %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/ai-assistant.js') }}"></script>
+{% endblock %}

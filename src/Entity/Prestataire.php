@@ -29,6 +29,21 @@ class Prestataire
     #[ORM\OneToMany(mappedBy: 'prestataire', targetEntity: Reservation::class, cascade: ['persist', 'remove'])]
     private Collection $reservations;
 
+    #[ORM\OneToOne(targetEntity: User::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $user = null;
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+        return $this;
+    }
+
     public function __construct()
     {
         $this->services = new ArrayCollection();

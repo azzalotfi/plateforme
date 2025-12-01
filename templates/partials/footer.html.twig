@@ -18,28 +18,28 @@
                     </div>
                     <span class="logo-text">ServicePro</span>
                 </div>
-                <p class="footer-description">La plateforme qui connecte clients et prestataires de services en Tunisie</p>
+                <p class="footer-description" data-i18n="footer_desc">La plateforme qui connecte clients et prestataires de services en Tunisie</p>
             </div>
             <div class="footer-column">
-                <h4 class="footer-title">Services</h4>
-                <ul class="footer-links">
-                    <li><a href="{{ path('services') }}">Plomberie</a></li>
-                    <li><a href="{{ path('services') }}">Peinture</a></li>
-                    <li><a href="{{ path('services') }}">Électricité</a></li>
-                    <li><a href="{{ path('services') }}">Nettoyage</a></li>
+                <h4 class="footer-title" data-i18n="footer_title_services">Services</h4>
+                <ul class="list-unstyled">
+                    <li><a href="{{ path('home') }}" class="text-white text-decoration-none">Accueil</a></li>
+                    <li><a href="{{ path('services') }}" class="text-white text-decoration-none">Services</a></li>
+                    <li><a href="{{ path('app_about') }}" class="text-white text-decoration-none">À propos</a></li>
+                    
                 </ul>
             </div>
             <div class="footer-column">
-                <h4 class="footer-title">À propos</h4>
+                <h4 class="footer-title" data-i18n="footer_title_about">À propos</h4>
                 <ul class="footer-links">
-                    <li><a href="#">Qui sommes-nous</a></li>
-                    <li><a href="{{ path('home') }}#how-it-works">Comment ça marche</a></li>
-                    <li><a href="#">Conditions</a></li>
-                    <li><a href="#">Confidentialité</a></li>
+                    <li><a href="#" data-i18n="footer_link_who">Qui sommes-nous</a></li>
+                    <li><a href="{{ path('home') }}#how-it-works" data-i18n="footer_link_how">Comment ça marche</a></li>
+                    <li><a href="#" data-i18n="footer_link_terms">Conditions</a></li>
+                    <li><a href="#" data-i18n="footer_link_privacy">Confidentialité</a></li>
                 </ul>
             </div>
             <div class="footer-column">
-                <h4 class="footer-title">Contact</h4>
+                <h4 class="footer-title" data-i18n="footer_title_contact">Contact</h4>
                 <ul class="footer-links">
                     <li><a href="mailto:contact@servicepro.tn">📧 contact@servicepro.tn</a></li>
                     <li><a href="tel:+21612345678">📞 +216 XX XXX XXX</a></li>
@@ -48,7 +48,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2025 ServicePro. Tous droits réservés.</p>
+            <p data-i18n="footer_rights">© 2025 ServicePro. Tous droits réservés.</p>
         </div>
     </div>
     <div class="help-icon">?</div>

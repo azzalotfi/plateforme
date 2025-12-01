@@ -2,156 +2,212 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    {% block stylesheets %}
-        
-        <link rel="stylesheet" href="{{ asset('css/styl.css') }}">
-    {% endblock %}
+    <link rel="stylesheet" href="{{ asset('css/styl.css') }}">
+    <title>Paiement</title>
 </head>
-
 <body>
 {% include 'partials/header.html.twig' %}
 
-
 {% if app.user %}
-
 <div class="container">
 
-<div class="card-container">
+    <!-- Message succès/erreur -->
+    <div id="payment-message" style="text-align:center; margin-bottom:15px;"></div>
 
-    <div class="front">
-        <div class="image">
-            <img src="{{ asset('images/chip.png') }}" alt="">
-            <img src="{{ asset('images/visa.png') }}" alt="">
-        </div>
-        <div class="card-number-box">#### #### #### ####</div>
-        
-        <div class="flexbox">
-            <div class="box">
-                <span>card holder</span>
-                <div class="card-holder-name">full name</div>
+    <!-- Carte animée -->
+    <div class="card-container">
+        <div class="front">
+            <div class="image">
+                <img src="{{ asset('images/chip.png') }}" alt="chip">
+                <img src="{{ asset('images/visa.png') }}" alt="visa logo" class="logo">
             </div>
-            <div class="box">
-                <span>expires</span>
-                <div class="expiration">
-                    <span class="exp-month">mm</span>
-                    <span class="exp-year">yy</span>
+            <div class="card-number-box">#### #### #### ####</div>
+            <div class="flexbox">
+                <div class="box">
+                    <span>Card Holder</span>
+                    <div class="card-holder-name">full name</div>
+                </div>
+                <div class="box">
+                    <span>Expires</span>
+                    <div class="expiration">
+                        <span class="exp-month">mm</span>/<span class="exp-year">yy</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="back">
-        <div class="stripe"></div>
-        <div class="box">
-            <span>cvv</span>
-            <div class="cvv-box"></div>
-            <img src="{{ asset('images/visa.png') }}" alt="">
+        <div class="back">
+            <div class="stripe"></div>
+            <div class="box">
+                <span>CVV</span>
+                <div class="cvv-box"></div>
+                <img src="{{ asset('images/visa.png') }}" alt="visa logo" class="logo-back">
+            </div>
         </div>
     </div>
 
+    <!-- Formulaire de paiement -->
+    <form id="payment-form">
+        <div class="inputBox">
+    <span>Card Number</span>
+    <div style="position:relative;">
+        <input type="text" id="card-number" maxlength="19" placeholder="#### #### #### ####" required
+               oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/(.{4})/g,'$1 ').trim(); detectCardType(); showCard();">
+        <img id="card-logo" src="{{ asset('images/default-card.png') }}" 
+             style="position:absolute; right:10px; top:50%; transform:translateY(-50%); height:24px;" alt="Card Logo">
+    </div>
 </div>
 
-<form action="{{ path('paiement_submit') }}" method="POST">
-    <div class="inputBox">
-        <span>Card Number</span>  
-        <input type="text" 
-               class="card-number-input"
-               maxlength="19"
-               required 
-               oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(.{4})/g, '$1 ').trim();">
-    </div>
-
-    <div class="inputBox">
-        <span>Card Holder</span>
-        <input type="text" class="card-holder-input" name="card_holder" required>
-    </div>
-
-    <div class="flexbox">
         <div class="inputBox">
-            <span>Expiration MM</span>
-            <select name="expiration_month" class="month-input" required>
-                <option value="" disabled selected>Month</option>
-                {% for m in 1..12 %}
-                    <option value="{{ '%02d'|format(m) }}">{{ '%02d'|format(m) }}</option>
-                {% endfor %}
-            </select>
+            <span>Card Holder</span>
+            <input type="text" id="card-holder-name" placeholder="Full Name" required>
         </div>
 
-        <div class="inputBox">
-            <span>Expiration YY</span>
-            <select name="expiration_year" class="year-input" required>
-                <option value="" disabled selected>Year</option>
-                {% for y in 2024..2035 %}
-                    <option value="{{ y }}">{{ y }}</option>
-                {% endfor %}
-            </select>
+        <div class="flexbox">
+            <div class="inputBox">
+                <span>Expiration Month</span>
+                <select id="exp-month" required>
+                    <option value="" disabled selected>Month</option>
+                    {% for m in 1..12 %}
+                        <option value="{{ '%02d'|format(m) }}">{{ '%02d'|format(m) }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="inputBox">
+                <span>Expiration Year</span>
+                <select id="exp-year" required>
+                    <option value="" disabled selected>Year</option>
+                    {% for y in 2024..2035 %}
+                        <option value="{{ y }}">{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="inputBox">
+                <span>CVV</span>
+                <input type="text" id="cvv" maxlength="4" placeholder="123" required>
+            </div>
+            <div class="inputBox">
+                <span>Montant (€)</span>
+                <input type="number" id="amount" min="1" placeholder="Ex: 10" required>
+            </div>
         </div>
 
-        <div class="inputBox">
-            <span>CVV</span>
-            <input type="text" 
-                   maxlength="3" 
-                   class="cvv-input" 
-                   required 
-                   oninput="this.value = this.value.replace(/[^0-9]/g, '');">
-        </div>
-    </div>
-
-    <input type="submit" value="Submit" class="submit-btn">
-</form>
-
+        <button type="submit" class="submit-btn">Pay</button>
+    </form>
 </div>
 
 {% else %}
-
-<div class="not-logged" style="text-align:center; margin-top:50px;">
+<div style="text-align:center; margin-top:50px;">
     <h2>Vous devez être connecté pour accéder au paiement.</h2>
     <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
 </div>
-
 {% endif %}
+
 {% include 'partials/footer.html.twig' %}
+
 <script>
-// ========== CARD NUMBER ==========
-document.querySelector('.card-number-input')?.addEventListener('input', function() {
-    let val = this.value.replace(/[^0-9]/g, '');  
-    this.value = val.replace(/(.{4})/g, '$1 ').trim();
-    document.querySelector('.card-number-box').innerText = this.value || '#### #### #### ####';
-});
+// ==================== Variables ====================
+const form = document.getElementById('payment-form');
+const cardNumberInput = document.getElementById('card-number');
+const cardHolderInput = document.getElementById('card-holder-name');
+const expMonthInput = document.getElementById('exp-month');
+const expYearInput = document.getElementById('exp-year');
+const cvvInput = document.getElementById('cvv');
+const amountInput = document.getElementById('amount');
+const cardLogo = document.getElementById('card-logo');
+const messageDiv = document.getElementById('payment-message');
 
-// ========== CARD HOLDER ==========
-document.querySelector('.card-holder-input')?.addEventListener('input', function() {
-    document.querySelector('.card-holder-name').innerText = this.value || 'full name';
-});
+// ==================== Affichage carte ====================
+cardNumberInput.addEventListener('input', e => document.querySelector('.card-number-box').innerText = e.target.value || '#### #### #### ####');
+cardHolderInput.addEventListener('input', e => document.querySelector('.card-holder-name').innerText = e.target.value || 'full name');
+expMonthInput.addEventListener('input', e => document.querySelector('.exp-month').innerText = e.target.value);
+expYearInput.addEventListener('input', e => document.querySelector('.exp-year').innerText = e.target.value);
+cvvInput.addEventListener('input', e => document.querySelector('.cvv-box').innerText = e.target.value);
 
-// ========== MONTH ==========
-document.querySelector('.month-input')?.addEventListener('input', function() {
-    document.querySelector('.exp-month').innerText = this.value;
-});
-
-// ========== YEAR ==========
-document.querySelector('.year-input')?.addEventListener('input', function() {
-    document.querySelector('.exp-year').innerText = this.value;
-});
-
-// ========== CVV ANIMATION ==========
-document.querySelector('.cvv-input')?.addEventListener('mouseenter', function() {
+// Flip card pour CVV
+cvvInput.addEventListener('mouseenter', () => {
     document.querySelector('.front').style.transform = 'perspective(1000px) rotateY(-180deg)';
     document.querySelector('.back').style.transform = 'perspective(1000px) rotateY(0deg)';
 });
-
-document.querySelector('.cvv-input')?.addEventListener('mouseleave', function() {
+cvvInput.addEventListener('mouseleave', () => {
     document.querySelector('.front').style.transform = 'perspective(1000px) rotateY(0deg)';
     document.querySelector('.back').style.transform = 'perspective(1000px) rotateY(180deg)';
 });
 
-document.querySelector('.cvv-input')?.addEventListener('input', function() {
-    document.querySelector('.cvv-box').innerText = this.value;
+// ==================== Détection type de carte ====================
+
+function detectCardType() {
+    const value = cardNumberInput.value.replace(/\s+/g,''); // supprimer espaces
+    let type = 'default-card.png'; // défaut
+
+    if (/^4[0-9]{0,}$/.test(value)) {
+        type = 'visa1.png';
+    } else if (/^5[1-5][0-9]{0,}$/.test(value)) {
+        type = 'mastercard.png';
+    } else if (/^3[47][0-9]{0,}$/.test(value)) {
+        type = 'amex.png';
+    } else if (/^6(?:011|5[0-9]{2})[0-9]{0,}$/.test(value)) {
+        type = 'discover.png';
+    }
+    cardLogo.src = "{{ asset('images/') }}" + type;
+}
+
+// ==================== Affichage message ====================
+function showMessage(msg, type){
+    messageDiv.innerText = msg;
+    messageDiv.style.color = type === 'success' ? '#4CAF50' : '#f44336';
+    messageDiv.style.fontWeight = 'bold';
+    messageDiv.style.fontSize = '16px';
+    messageDiv.style.opacity = '1';
+    setTimeout(() => {
+        messageDiv.style.opacity = '0';
+        setTimeout(()=>messageDiv.innerText='',500);
+    }, 5000);
+}
+
+// ==================== Submit paiement AJAX ====================
+
+
+// Submit paiement
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const payload = {
+        amount: parseInt(amountInput.value) * 100, // centimes
+        paymentToken: "tok_visa" // token test
+    };
+
+    try {
+        const response = await fetch("{{ path('paiement_submit') }}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showMessage(`Paiement réussi ! Points ajoutés : ${result.points}`, 'success');
+
+            // 🔹 Réinitialiser le formulaire
+            form.reset();
+
+            // 🔹 Réinitialiser la carte visuelle
+            document.querySelector('.card-number-box').innerText = '#### #### #### ####';
+            document.querySelector('.card-holder-name').innerText = 'full name';
+            document.querySelector('.exp-month').innerText = 'mm';
+            document.querySelector('.exp-year').innerText = 'yy';
+            document.querySelector('.cvv-box').innerText = '';
+
+            // 🔹 Réinitialiser logo de carte
+            document.getElementById('card-logo').src = "{{ asset('images/default-card.png') }}";
+        } else {
+            showMessage(`Erreur : ${result.message}`, 'error');
+        }
+    } catch (err) {
+        showMessage(`Erreur serveur : ${err.message}`, 'error');
+    }
 });
 </script>
-
 </body>
 </html>

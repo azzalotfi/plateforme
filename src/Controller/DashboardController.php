@@ -16,60 +16,58 @@ class DashboardController extends AbstractController
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(Security $security, EntityManagerInterface $em): Response
     {
-        
+
         $user = $security->getUser();
         if (!$user instanceof User) {
             return $this->redirectToRoute('app_login');
         }
 
-        
+
         if (!$this->isGranted('ROLE_CLIENT')) {
             return $this->redirectToRoute('app_profile');
         }
 
-        $allReservations = [];
-        
-        
-        $client = $em->getRepository(\App\Entity\Client::class)->find($user->getId());
-        if ($client) {
-            $allReservations = $client->getReservations()->toArray();
-        } else {
-            
-            try {
-                if (method_exists($user, 'getReservations')) {
-                    $allReservations = $user->getReservations()->toArray();
-                }
-            } catch (\Exception $e) {
-                $allReservations = $em->getRepository(Reservation::class)
-                    ->createQueryBuilder('r')
-                    ->where('r.client = :clientId')
-                    ->setParameter('clientId', $user->getId())
-                    ->orderBy('r.dateReservation', 'DESC')
-                    ->getQuery()
-                    ->getResult();
-            }
+        // Get client entity associated with the user
+        $client = $em->getRepository(\App\Entity\Client::class)->findOneBy(['user' => $user]);
+
+        if (!$client) {
+            // If no client entity exists, create one
+            $client = new \App\Entity\Client();
+            $client->setUser($user);
+            $client->setNom($user->getNom());
+            $client->setPrenom($user->getPrenom());
+            $em->persist($client);
+            $em->flush();
         }
-        
-        usort($allReservations, function($a, $b) {
-            if (!$a->getDateReservation() || !$b->getDateReservation()) return 0;
+
+        // Get all reservations for this client
+        $allReservations = $client->getReservations()->toArray();
+
+        usort($allReservations, function ($a, $b) {
+            if (!$a->getDateReservation() || !$b->getDateReservation())
+                return 0;
             return $b->getDateReservation() <=> $a->getDateReservation();
         });
-        
+
         $userReservations = array_slice($allReservations, 0, 10);
 
-        
+
         $totalReservations = count($allReservations);
-        $reservationsEnCours = count(array_filter($allReservations, fn($r) => 
+        $reservationsEnCours = count(array_filter(
+            $allReservations,
+            fn($r) =>
             $r->getStatut() && (
-                $r->getStatut() === 'en_cours' || 
-                $r->getStatut() === 'En attente' || 
+                $r->getStatut() === 'en_cours' ||
+                $r->getStatut() === 'En attente' ||
                 $r->getStatut() === 'en_attente' ||
                 stripos($r->getStatut(), 'attente') !== false
             )
         ));
-        $reservationsCompletees = count(array_filter($allReservations, fn($r) => 
+        $reservationsCompletees = count(array_filter(
+            $allReservations,
+            fn($r) =>
             $r->getStatut() && (
-                $r->getStatut() === 'complete' || 
+                $r->getStatut() === 'complete' ||
                 $r->getStatut() === 'Complétée' ||
                 $r->getStatut() === 'termine' ||
                 stripos($r->getStatut(), 'complete') !== false

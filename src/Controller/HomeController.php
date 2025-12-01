@@ -12,7 +12,7 @@ class HomeController extends AbstractController
     #[Route('/', name: 'home')]
     public function index(EntityManagerInterface $em): Response
     {
-        $services = $em->getRepository(Service::class)->findBy([], ['nomService' => 'ASC'], 4);
+        $services = $em->getRepository(Service::class)->findBy([], ['nomService' => 'ASC'], 8);
 
         return $this->render('home.html.twig', [
             'services' => $services,

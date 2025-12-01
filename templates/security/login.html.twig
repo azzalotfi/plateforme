@@ -52,11 +52,13 @@
                 <input type="password" name="_password" placeholder="Mot de passe" class="input-field" required>
 
                 <!-- ROLE SELECT avec icônes -->
-                <div class="role-select">
-                    <div class="role-option active" data-role="client">👤 Client</div>
-                    <div class="role-option" data-role="prestataire">🧰 Prestataire</div>
-                    <input type="hidden" name="_role" value="client" id="role-input">
-                </div>
+
+              <div class="role-select">
+    <div class="role-option active" data-role="client" style="pointer-events: none; opacity: 0.6;">👤 Client</div>
+    <div class="role-option" data-role="prestataire" style="pointer-events: none; opacity: 0.6;">🧰 Prestataire</div>
+    <input type="hidden" name="_role" value="client" id="role-input">
+</div>
+
 
                 <button type="submit" class="submit-btn">Se connecter</button>
             </form>
@@ -84,4 +86,5 @@
         });
     });
 </script>
+
 {% endblock %}

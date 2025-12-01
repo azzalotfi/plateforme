@@ -25,9 +25,9 @@
       </div>
 
       <div class="actions">
-        <button type="button" id="edit-btn" class="btn btn-primary">Modifier</button>
-        <button type="button" id="cancel-btn" class="btn btn-secondary" style="display: none;">Annuler</button>
-        <a href="{{ path('app_logout') }}" class="btn btn-logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
+        <button type="button" id="edit-btn" class="btn btn-primary" data-i18n="profile_header_edit">Modifier</button>
+        <button type="button" id="cancel-btn" class="btn btn-secondary" style="display: none;" data-i18n="profile_header_cancel">Annuler</button>
+        <a href="{{ path('app_logout') }}" class="btn btn-logout"><i class="bi bi-box-arrow-right"></i> <span data-i18n="profile_header_logout">Déconnexion</span></a>
       </div>
     </div>
 
@@ -38,65 +38,65 @@
 
     <form method="post" action="{{ path('app_profile') }}" id="profile-form">
       <section class="profile-section">
-        <h3>Informations personnelles</h3>
+        <h3 data-i18n="profile_personal_info">Informations personnelles</h3>
         <div class="field">
-          <label>Nom</label>
+          <label data-i18n="profile_label_name">Nom</label>
           <div class="value view-mode">{{ user.nom ?: '-' }}</div>
           <input type="text" name="nom" class="edit-mode input-field" value="{{ user.nom ?: '' }}" />
         </div>
         <div class="field">
-          <label>Prénom</label>
+          <label data-i18n="profile_label_firstname">Prénom</label>
           <div class="value view-mode">{{ user.prenom ?: '-' }}</div>
           <input type="text" name="prenom" class="edit-mode input-field" value="{{ user.prenom ?: '' }}" />
         </div>
         <div class="field">
-          <label>Email</label>
+          <label data-i18n="profile_label_email">Email</label>
           <div class="value">{{ user.email ?: '-' }}</div>
           <small class="hint">L'email ne peut pas être modifié</small>
         </div>
         <div class="field">
-          <label>Téléphone</label>
+          <label data-i18n="profile_label_phone">Téléphone</label>
           <div class="value view-mode">{{ user.tel ?: 'Non renseigné' }}</div>
           <input type="tel" name="tel" class="edit-mode input-field" value="{{ user.tel ?: '' }}" placeholder="+216 XX XXX XXX" />
         </div>
         <div class="field">
-          <label>Adresse</label>
+          <label data-i18n="profile_label_address">Adresse</label>
           <div class="value view-mode">{{ user.adresse ?: 'Non renseignée' }}</div>
           <input type="text" name="adresse" class="edit-mode input-field" value="{{ user.adresse ?: '' }}" placeholder="Votre adresse complète" />
         </div>
       </section>
 
       <section class="profile-section">
-        <h3>Biographie</h3>
+        <h3 data-i18n="profile_bio_title">Biographie</h3>
         <div class="bio view-mode">{{ user.bio ?: 'Parlez de votre expérience et vos compétences...' }}</div>
         <textarea name="bio" class="edit-mode input-field" rows="4" placeholder="Parlez de votre expérience et vos compétences...">{{ user.bio ?: '' }}</textarea>
       </section>
 
       <section class="profile-section">
-        <h3>Compétences</h3>
+        <h3 data-i18n="profile_skills_title">Compétences</h3>
         <div class="skills view-mode">{{ user.competences ?: 'Aucune compétence renseignée' }}</div>
         <input type="text" name="competences" class="edit-mode input-field" value="{{ user.competences ?: '' }}" placeholder="Plomberie, Chauffage, Sanitaire" />
         <small class="hint">Séparez les compétences par des virgules</small>
       </section>
 
       <div class="form-actions edit-mode">
-        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-        <button type="button" id="cancel-form-btn" class="btn btn-secondary">Annuler</button>
+        <button type="submit" class="btn btn-primary" data-i18n="profile_btn_save">Enregistrer les modifications</button>
+        <button type="button" id="cancel-form-btn" class="btn btn-secondary" data-i18n="profile_btn_cancel_form">Annuler</button>
       </div>
     </form>
 
     <section class="stats">
       <div class="stat-card">
         <div class="stat-value">{{ user.totalGains is defined and user.totalGains is not null ? (user.totalGains ~ ' TND') : '0 TND' }}</div>
-        <div class="stat-label">Gains totaux</div>
+        <div class="stat-label" data-i18n="profile_stat_gains">Gains totaux</div>
       </div>
       <div class="stat-card">
         <div class="stat-value">{{ user.completed ?: '0' }}</div>
-        <div class="stat-label">Prestations complétées</div>
+        <div class="stat-label" data-i18n="profile_stat_completed">Prestations complétées</div>
       </div>
       <div class="stat-card">
         <div class="stat-value">{{ user.reviewsCount ?: '0' }}</div>
-        <div class="stat-label">Avis reçus</div>
+        <div class="stat-label" data-i18n="profile_stat_reviews">Avis reçus</div>
       </div>
     </section>
   </div>

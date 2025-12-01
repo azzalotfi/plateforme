@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la réservation #{{ reservation.id }}{% endblock %}
+
+{% block body %}
+{% include 'partials/header.html.twig' %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-gradient-primary text-white p-4 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div>
+                        <h3 class="card-title mb-1 fw-bold">Réservation #{{ reservation.id }}</h3>
+                        <p class="mb-0 opacity-75">{{ reservation.dateReservation|date('d/m/Y') }} à {{ reservation.heure ? reservation.heure|date('H:i') : 'N/A' }}</p>
+                    </div>
+                    <span class="badge bg-white text-primary fs-6 px-3 py-2 rounded-pill">
+                        {{ reservation.statut }}
+                    </span>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <h5 class="text-uppercase text-muted fw-bold fs-7 mb-3">Client</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3 text-primary">
+                                    <i class="bi bi-person fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ reservation.client.nom }} {{ reservation.client.prenom }}</h6>
+                                    <p class="text-muted mb-0 small">{{ reservation.client.user.email }}</p>
+                                    {% if reservation.client.user.tel %}
+                                        <p class="text-muted mb-0 small"><i class="bi bi-telephone me-1"></i> {{ reservation.client.user.tel }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-uppercase text-muted fw-bold fs-7 mb-3">Service</h5>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-3 me-3 text-primary">
+                                    <i class="bi bi-tools fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ reservation.service.nomService }}</h6>
+                                    <p class="text-muted mb-0 small">{{ reservation.service.categorie }}</p>
+                                    <p class="text-primary fw-bold mb-0">{{ reservation.montantTotal }} TND</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <div class="mb-4">
+                        <h5 class="text-uppercase text-muted fw-bold fs-7 mb-3">Lieu de la prestation</h5>
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-geo-alt text-primary me-2 mt-1"></i>
+                            <p class="mb-0">{{ reservation.lieu ?? 'Non spécifié' }}</p>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-3 mt-5 d-md-flex justify-content-md-end">
+                        <a href="{{ path('app_provider_dashboard') }}" class="btn btn-light btn-lg rounded-3 fw-semibold text-secondary">
+                            <i class="bi bi-arrow-left me-2"></i> Retour
+                        </a>
+                        {% if reservation.statut == 'En attente' %}
+                            <button onclick="acceptReservation({{ reservation.id }})" class="btn btn-success btn-lg rounded-3 fw-bold text-white">
+                                <i class="bi bi-check-circle me-2"></i> Accepter
+                            </button>
+                            <button onclick="refuseReservation({{ reservation.id }})" class="btn btn-danger btn-lg rounded-3 fw-bold text-white">
+                                <i class="bi bi-x-circle me-2"></i> Refuser
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'partials/footer.html.twig' %}
+
+<script>
+    function acceptReservation(reservationId) {
+        fetch(`/provider/reservation/${reservationId}/accept`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.message || 'Erreur');
+            }
+        });
+    }
+
+    function refuseReservation(reservationId) {
+        if (!confirm('Êtes-vous sûr de vouloir refuser cette réservation ?')) {
+            return;
+        }
+        fetch(`/provider/reservation/${reservationId}/refuse`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.message || 'Erreur');
+            }
+        });
+    }
+</script>
+{% endblock %}
