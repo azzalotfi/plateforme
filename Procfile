@@ -1,1 +1,1 @@
-web: symfony serve --no-tls
+web: php -S 0.0.0.0:8000 -t public
